@@ -1,0 +1,138 @@
+email:
+  smtp_host: smtp.gmail.com
+  smtp_port: 587
+  user: epicchutiya7@gmail.com
+  from: epicchutiya7@gmail.com
+  to: epicchutiya7@gmail.com
+  app_password_env: JOB_MONITOR_GMAIL_APP_PASSWORD
+  notify_on_errors: true
+  error_email_cooldown_minutes: 60
+
+notifications:
+  skip_first_run: true
+  ignore_error_statuses:
+    - 404
+    - 410
+
+schedule:
+  timezone: America/Chicago
+  active_hours:
+    start: "00:00"
+    end: "23:59"
+  default_interval_minutes: 20
+  sleep_seconds: 20
+
+env_file: .env
+auto_sources_file: auto_sources.yaml
+
+filters:
+  include_keywords:
+    - sde
+    - software engineer
+    - senior software engineer
+    - sr software engineer
+    - sr. software engineer
+    - seniorsoftware engineer
+    - software engineering
+    - software developer
+    - software development engineer
+    - backend engineer
+    - back-end engineer
+    - full-stack engineer
+    - full stack engineer
+    - full-stack software developer
+    - full stack software developer
+    - frontend engineer
+    - front-end engineer
+    - platform engineer
+    - infrastructure engineer
+    - systems engineer
+    - machine learning engineer
+    - ml engineer
+    - ai engineer
+    - applied scientist
+  exclude_keywords:
+    - sales
+    - support engineer
+    - sre
+    - site reliability
+    - devops
+    - dev ops
+    - mobile
+    - android
+    - ios
+    - data engineer
+    - data engineering
+  location:
+    us_only: true
+    allow_remote_without_us_signal: false
+
+sources:
+  - name: Apple
+    url: https://jobs.apple.com/en-us/search?location=united-states-USA
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Microsoft
+    url: https://apply.careers.microsoft.com/careers?query=software+engineer&start=0&location=united+states&pid=1970393556621801&sort_by=timestamp&filter_include_remote=1
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Google
+    url: https://www.google.com/about/careers/applications/jobs/results/?q=Software%20Engineer&location=United%20States&hl=en&sort_by=date&target_level=MID&target_level=EARLY
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Airbnb
+    url: https://careers.airbnb.com/positions/?_departments=engineering&_offices=united-states&_jobs_sort=updated_at
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Lyft
+    url: https://www.lyft.com/careers#openings
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Expedia
+    url: https://careers.expediagroup.com/jobs/?keyword=software+engineer&filter%5Bcategory%5D=Technology&filter%5Bjobfamily%5D=&filter%5Bcountry%5D=United+States&filter%5Bstate%5D=&filter%5Bspecialty%5D=
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Atlassian
+    url: https://www.atlassian.com/company/careers/all-jobs?team=Engineering&location=United%20States&search=Software%20Engineer
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Oracle
+    url: https://careers.oracle.com/en/sites/jobsearch/jobs?keyword=Software&lastSelectedFacet=POSTING_DATES&mode=location&selectedCategoriesFacet=300000001917356&selectedFlexFieldsFacets=%22AttributeChar4%7CEmployee%7C%7CAttributeChar6%7C3+to+5%2B+years%7C%7CAttributeChar13%7CProfessional%22&selectedLocationsFacet=300000000149325&selectedPostingDatesFacet=7&sortBy=POSTING_DATES_DESC
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Uber
+    url: https://www.uber.com/us/en/careers/list/?query=Software%20engineer&department=Engineering&team=Backend&team=Data&team=Engineering&team=Fullstack
+    interval_minutes: 20
+    assume_us_only: true
+  - name: OpenAI
+    url: https://jobs.ashbyhq.com/openai
+    interval_minutes: 20
+    assume_us_only: false
+  - name: Dropbox (Direct)
+    url: https://www.dropbox.jobs/en/jobs/?search=software+engineer&location=Remote+-+US%3A+All+locations&pagesize=20#results
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Coinbase (Direct)
+    url: https://www.coinbase.com/careers/positions?search=software%2520engineer
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Asana (Direct)
+    url: https://asana.com/jobs/all
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Netflix (Direct)
+    url: https://explore.jobs.netflix.net/careers?query=software%20engineer&location=any&pid=790313790368&Region=ucan&domain=netflix.com&sort_by=new
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Duolingo (Direct)
+    url: https://careers.duolingo.com/#careers
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Spotify (Direct)
+    url: https://www.lifeatspotify.com/jobs?c=backend&c=client-c&c=data&c=developer-tools-infrastructure&c=engineering-leadership&c=machine-learning&c=mobile&c=network-engineering-it&c=security&c=tech-research&c=web
+    interval_minutes: 20
+    assume_us_only: true
+  - name: Adobe (Direct)
+    url: https://careers.adobe.com/us/en/search-results?keywords=software%20engineer
+    interval_minutes: 20
+    assume_us_only: true

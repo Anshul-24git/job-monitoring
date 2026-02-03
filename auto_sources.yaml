@@ -1,0 +1,29 @@
+greenhouse:
+  - airbnb
+  - anthropic
+  - stripe
+  - databricks
+  - instacart
+  - pinterest
+  - figma
+  - twilio
+  - affirm
+  - sofi
+  - chime
+  - peloton
+  - scaleai
+ashby:
+  - cohere
+  - perplexity
+  - render
+  - supabase
+  - posthog
+  - linear
+  - ramp
+  - sentry
+  - replit
+  - clerk
+  - railway
+  - baseten
+  - modal
+  - langchain

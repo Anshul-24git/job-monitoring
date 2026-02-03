@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Job Monitor Dashboard</title>
+    <link rel="stylesheet" href="/static/dashboard.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div class="hero-left">
+          <div class="badge">Job Monitor</div>
+          <h1>Hiring pulse, in one glance</h1>
+          <p class="hero-subtitle">
+            Live snapshots of your sources, matches, and delivery health.
+          </p>
+        </div>
+        <div class="hero-right">
+          <div class="meta-card">
+            <div class="meta-label">Active Hours</div>
+            <div class="meta-value">
+              {{ config_summary.active_start or "00:00" }}–{{ config_summary.active_end or "23:59" }}
+            </div>
+            <div class="meta-label">Interval</div>
+            <div class="meta-value">{{ config_summary.default_interval or 20 }} min</div>
+            <div class="meta-label">Sources</div>
+            <div class="meta-value">{{ config_summary.sources_count or 0 }}</div>
+            <div class="meta-label">Timezone</div>
+            <div class="meta-value">{{ config_summary.timezone or "America/Chicago" }}</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="kpi-grid">
+        <div class="card kpi">
+          <div class="kpi-label">Total Jobs Tracked</div>
+          <div class="kpi-value">{{ stats.total_jobs }}</div>
+          <div class="kpi-foot">All-time in your database</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-label">Jobs In Last 24h</div>
+          <div class="kpi-value">{{ stats.jobs_last_24h }}</div>
+          <div class="kpi-foot">Fresh postings detected</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-label">Unnotified</div>
+          <div class="kpi-value">{{ stats.unnotified }}</div>
+          <div class="kpi-foot">Queued or skipped (first run)</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-label">Source Health</div>
+          <div class="kpi-value">
+            {{ sources_ok or 0 }} / {{ config_summary.sources_count or 0 }}
+          </div>
+          <div class="kpi-foot">
+            {% if sources_error %}
+              {{ sources_error }} sources need attention
+            {% else %}
+              All sources healthy
+            {% endif %}
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="card wide">
+          <div class="card-header">
+            <h2>Latest Jobs</h2>
+            <span class="chip">Last seen: {{ stats.last_seen or "—" }}</span>
+          </div>
+          <div class="table">
+            <div class="table-row table-header">
+              <div>Role</div>
+              <div>Source</div>
+              <div>Location</div>
+              <div>Posted</div>
+            </div>
+            {% for job in stats.latest_jobs %}
+              <div class="table-row">
+                <div class="title">
+                  <a href="{{ job.url }}" target="_blank" rel="noreferrer">
+                    {{ job.title }}
+                  </a>
+                </div>
+                <div class="source">{{ job.source }}</div>
+                <div class="location">{{ job.location or "—" }}</div>
+                <div class="posted">{{ job.posted_at or "—" }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="card side">
+          <div class="card-header">
+            <h2>Top Sources</h2>
+            <span class="chip">By volume</span>
+          </div>
+          <div class="list">
+            {% for item in stats.by_source %}
+              <div class="list-row">
+                <span>{{ item.source }}</span>
+                <span class="pill">{{ item.count }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="card wide">
+          <div class="card-header">
+            <h2>Diagnostics</h2>
+            <span class="chip">From latest run</span>
+          </div>
+          {% if diagnostics.results %}
+            <div class="table">
+              <div class="table-row table-header">
+                <div>Source</div>
+                <div>Status</div>
+                <div>Jobs</div>
+                <div>Matched</div>
+              </div>
+              {% for result in diagnostics.results %}
+                <div class="table-row">
+                  <div>{{ result.display_name or result.name }}</div>
+                  <div class="status {{ result.status }}">
+                    {{ result.status }}
+                  </div>
+                  <div>{{ result.raw_jobs or "—" }}</div>
+                  <div>{{ result.matched_jobs or "—" }}</div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="empty">Run diagnostics to populate this section.</div>
+          {% endif %}
+        </div>
+
+        <div class="card side">
+          <div class="card-header">
+            <h2>Log Tail</h2>
+            <span class="chip">Last 120 lines</span>
+          </div>
+          <div class="log">
+            {% for line in log_tail %}
+              <div>{{ line }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
