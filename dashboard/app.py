@@ -188,6 +188,9 @@ def index(request: Request) -> HTMLResponse:
     summary = diagnostics.get("summary") if diagnostics else {}
     sources_ok = summary.get("ok_sources")
     sources_error = summary.get("error_sources")
+    source_options = sorted({job["source"] for job in stats["latest_jobs"]})
+    if not source_options and source_display_map:
+        source_options = sorted(set(source_display_map.values()))
 
     return templates.TemplateResponse(
         "index.html",
@@ -199,5 +202,6 @@ def index(request: Request) -> HTMLResponse:
             "sources_ok": sources_ok,
             "sources_error": sources_error,
             "config_summary": config_summary,
+            "source_options": source_options,
         },
     )
