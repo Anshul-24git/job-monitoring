@@ -8,7 +8,7 @@ Monitor company job boards for US-based software engineering roles and get notif
 - US-only filtering with optional remote support
 - Keyword include/exclude filtering
 - SQLite de-duplication so each job is notified once
-- Runs only during your active hours (default: 9 AM–7 PM America/Chicago)
+- Runs during your configured active hours (default: 9 AM–7 PM America/Chicago)
 
 ## Quick Start
 1. Create and activate a Python venv (optional but recommended).
@@ -66,7 +66,7 @@ These are expanded into ATS URLs automatically and deduplicated against existing
 Run a lightweight dashboard that reads from `job_monitor.db`, `logs/diagnostics.json`, and `logs/job-monitor.log`:
 
 ```bash
-cd "/Users/anshuljoshi/UT Drive/Projects/job-monitoring"
+cd /path/to/job-monitoring
 source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn dashboard.app:app --reload --port 8080
@@ -79,3 +79,6 @@ Optional environment overrides:
 - `JOB_MONITOR_DIAGNOSTICS_PATH` (default: `logs/diagnostics.json`)
 - `JOB_MONITOR_LOG_PATH` (default: `logs/job-monitor.log`)
 - `JOB_MONITOR_CONFIG` (default: `config.yaml`)
+
+## Launchd (Auto-Run on macOS)
+Once you install the LaunchAgent, the scheduler starts automatically whenever your Mac is awake (lid open). It pauses when the laptop sleeps and resumes when it wakes.
