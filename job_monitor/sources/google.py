@@ -22,21 +22,25 @@ def _extract_tokens(html: str) -> Tuple[str, str, str]:
     bl = ""
     at = ""
 
-    match = re.search(r'"f.sid":\s*"?(\d+)"?', html)
-    if match:
-        f_sid = match.group(1)
+    def find_key(key: str) -> str:
+        match = re.search(rf'{key}["\\\']?\\s*[:=]\\s*["\\\']([^"\\\']+)', html)
+        return match.group(1) if match else ""
 
-    match = re.search(r'"SNlM0e":"([^"]+)"', html)
-    if match:
-        at = match.group(1)
+    f_sid = find_key("f.sid") or find_key("FdrFJe")
+    at = find_key("SNlM0e")
+    bl = find_key("bl") or find_key("cfb2h")
 
-    match = re.search(r'&bl=([\\w.-]+)', html)
-    if match:
-        bl = match.group(1)
-    else:
-        match = re.search(r'"bl":"([^"]+)"', html)
-        if match:
-            bl = match.group(1)
+    if not f_sid or not bl:
+        for match in re.finditer(r'https://www\\.google\\.com[^"\\s]+batchexecute\\?[^"\\s]+', html):
+            try:
+                url = match.group(0)
+                query = parse_qs(urlparse(url).query)
+                if not f_sid and query.get("f.sid"):
+                    f_sid = query["f.sid"][0]
+                if not bl and query.get("bl"):
+                    bl = query["bl"][0]
+            except Exception:
+                continue
 
     return f_sid, bl, at
 
