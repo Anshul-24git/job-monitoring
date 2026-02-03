@@ -272,15 +272,25 @@ body[data-theme="dark"] .log {
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 16px;
+  align-items: center;
 }
 
-.filters input,
+.filters input[type="search"],
 .filters select {
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid rgba(30, 28, 26, 0.15);
   background: #fffdf8;
   color: var(--ink);
+}
+
+.filters input[type="search"] {
+  flex: 1 1 240px;
+  min-width: 220px;
+}
+
+.filters select {
+  flex: 0 0 200px;
   min-width: 180px;
 }
 
@@ -293,9 +303,41 @@ body[data-theme="dark"] .filters select {
 .toggle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   font-size: 13px;
   color: var(--muted);
+}
+
+.toggle input {
+  display: none;
+}
+
+.toggle span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(30, 28, 26, 0.2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle span::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(30, 28, 26, 0.3);
+}
+
+.toggle input:checked + span {
+  color: var(--accent);
+  border-color: rgba(15, 118, 110, 0.4);
+  background: rgba(15, 118, 110, 0.12);
+}
+
+.toggle input:checked + span::before {
+  background: var(--accent);
 }
 
 .ghost {
@@ -309,6 +351,24 @@ body[data-theme="dark"] .filters select {
 
 body[data-theme="dark"] .ghost {
   border: 1px solid rgba(245, 242, 235, 0.2);
+}
+
+body[data-theme="dark"] .toggle span {
+  border: 1px solid rgba(245, 242, 235, 0.2);
+}
+
+body[data-theme="dark"] .toggle span::before {
+  background: rgba(245, 242, 235, 0.3);
+}
+
+body[data-theme="dark"] .toggle input:checked + span {
+  border-color: rgba(34, 211, 238, 0.6);
+  background: rgba(34, 211, 238, 0.16);
+  color: var(--accent);
+}
+
+body[data-theme="dark"] .toggle input:checked + span::before {
+  background: var(--accent);
 }
 
 .filter-count {
