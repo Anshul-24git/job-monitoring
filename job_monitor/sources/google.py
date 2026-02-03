@@ -158,7 +158,7 @@ def fetch_google_jobs(source: dict, session) -> List[Job]:
 
     landing = request_with_retries(session, "GET", source["url"], timeout=20)
     f_sid, bl, at_token = _extract_tokens(landing.text)
-    if not f_sid or not bl or not at_token:
+    if not f_sid or not bl:
         raise ValueError("Unable to extract Google Careers tokens.")
 
     for page in range(1, max_pages + 1):
@@ -176,7 +176,8 @@ def fetch_google_jobs(source: dict, session) -> List[Job]:
         }
 
         data = _build_request_payload(search, location, lang, page)
-        data["at"] = at_token
+        if at_token:
+            data["at"] = at_token
 
         headers = {
             "content-type": "application/x-www-form-urlencoded;charset=UTF-8",
@@ -199,6 +200,8 @@ def fetch_google_jobs(source: dict, session) -> List[Job]:
         payload = _parse_batchexecute(resp.text)
         job_entries, total, page_size = _extract_jobs(payload)
         if not job_entries:
+            if not at_token and page == 1:
+                raise ValueError("Unable to extract Google Careers tokens.")
             break
 
         for entry in job_entries:
