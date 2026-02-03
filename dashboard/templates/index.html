@@ -17,6 +17,7 @@
           </p>
         </div>
         <div class="hero-right">
+          <button class="theme-toggle" id="theme-toggle" type="button">Toggle theme</button>
           <div class="meta-card">
             <div class="meta-label">Active Hours</div>
             <div class="meta-value">
@@ -69,6 +70,25 @@
             <h2>Latest Jobs</h2>
             <span class="chip">Last seen: {{ stats.last_seen or "—" }}</span>
           </div>
+          <div class="filters">
+            <input id="filter-search" type="search" placeholder="Search roles or locations" />
+            <select id="filter-source">
+              <option value="">All sources</option>
+              {% for source in source_options %}
+                <option value="{{ source }}">{{ source }}</option>
+              {% endfor %}
+            </select>
+            <label class="toggle">
+              <input type="checkbox" id="filter-unnotified" />
+              <span>Unnotified</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="filter-recent" />
+              <span>Last 24h</span>
+            </label>
+            <button class="ghost" id="filter-reset" type="button">Reset</button>
+            <span class="filter-count" id="filter-count"></span>
+          </div>
           <div class="table">
             <div class="table-row table-header">
               <div>Role</div>
@@ -77,7 +97,15 @@
               <div>Posted</div>
             </div>
             {% for job in stats.latest_jobs %}
-              <div class="table-row">
+              <div
+                class="table-row job-row"
+                data-source="{{ job.source }}"
+                data-title="{{ job.title|lower }}"
+                data-location="{{ (job.location or '')|lower }}"
+                data-posted="{{ job.posted_at.isoformat() if job.posted_at else '' }}"
+                data-first-seen="{{ job.first_seen.isoformat() if job.first_seen else '' }}"
+                data-notified="{{ '1' if job.notified_at else '0' }}"
+              >
                 <div class="title">
                   <a href="{{ job.url }}" target="_blank" rel="noreferrer">
                     {{ job.title }}
@@ -150,5 +178,6 @@
         </div>
       </section>
     </div>
+    <script src="/static/dashboard.js"></script>
   </body>
 </html>
