@@ -62,6 +62,11 @@ def load_config(path: str) -> Dict[str, Any]:
         )
         cfg["sources"].extend(generated)
 
+    cfg["sources"] = [
+        source for source in cfg["sources"]
+        if source.get("enabled", True) is not False
+    ]
+
     for source in cfg["sources"]:
         if "interval_minutes" not in source:
             source["interval_minutes"] = cfg["schedule"]["default_interval_minutes"]

@@ -36,6 +36,7 @@ Use a Gmail App Password (not your main Gmail password). You can create one in y
 - Set `notifications.seed_require_posted_at: true` to only send seed notifications when a posted date is available.
 - Use `notifications.ignore_error_statuses` to suppress noisy 404/410 emails for auto-generated sources.
 - Auto-sources can provide a nicer email name via `display_name` (default uses a prettified slug).
+- You can disable a source by adding `enabled: false` to it in `config.yaml`.
 
 ## Auto Sources (ATS Slugs)
 You can generate sources from ATS slugs by adding an `auto_sources.yaml` file and pointing to it in config:
