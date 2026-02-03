@@ -43,6 +43,8 @@ def load_config(path: str) -> Dict[str, Any]:
 
     cfg.setdefault("notifications", {})
     cfg["notifications"].setdefault("skip_first_run", False)
+    cfg["notifications"].setdefault("seed_recent_hours", 0)
+    cfg["notifications"].setdefault("seed_require_posted_at", True)
     cfg["notifications"].setdefault("ignore_error_statuses", [404, 410])
 
     auto_sources = cfg.get("auto_sources") or {}

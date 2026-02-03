@@ -32,6 +32,8 @@ Use a Gmail App Password (not your main Gmail password). You can create one in y
 - For custom portals, you can add selectors in `config.yaml` or rely on JSON-LD JobPosting data if present.
 - Errors from a single source do not stop the overall loop.
 - Set `notifications.skip_first_run: true` to seed the database without sending a first-run email flood.
+- Use `notifications.seed_recent_hours` to allow notifications for jobs posted recently even on a source's first run.
+- Set `notifications.seed_require_posted_at: true` to only send seed notifications when a posted date is available.
 - Use `notifications.ignore_error_statuses` to suppress noisy 404/410 emails for auto-generated sources.
 - Auto-sources can provide a nicer email name via `display_name` (default uses a prettified slug).
 

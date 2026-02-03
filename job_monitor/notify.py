@@ -6,16 +6,22 @@ from typing import Iterable, List
 from .models import Job
 
 
-def format_job_line(job: Job) -> str:
-    posted = job.posted_at.isoformat() if job.posted_at else "unknown"
+def format_job_line(job: Job, *, tz=None) -> str:
+    if job.posted_at:
+        posted_at = job.posted_at
+        if tz:
+            posted_at = posted_at.astimezone(tz)
+        posted = posted_at.strftime("%Y-%m-%d | %H:%M %Z")
+    else:
+        posted = "unknown"
     location = job.location or "unknown"
     return f"- {job.title} | {location} | posted: {posted}\n  {job.url}"
 
 
-def build_jobs_email(jobs: List[Job], header: str) -> str:
+def build_jobs_email(jobs: List[Job], header: str, *, tz=None) -> str:
     lines = [header, ""]
     for job in jobs:
-        lines.append(format_job_line(job))
+        lines.append(format_job_line(job, tz=tz))
     lines.append("")
     lines.append("You are receiving this because it matched your filters.")
     return "\n".join(lines)

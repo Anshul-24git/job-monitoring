@@ -63,15 +63,37 @@ def format_header(source_name: str, count: int) -> str:
     return f"New jobs from {source_name}, check them out:"
 
 
+def should_notify_seed(
+    *,
+    seeded: bool,
+    job,
+    now: datetime,
+    seed_recent_hours: int,
+    seed_require_posted_at: bool,
+) -> bool:
+    if not seeded:
+        return True
+    if not seed_recent_hours:
+        return False
+    if seed_require_posted_at and not job.posted_at:
+        return False
+    if not job.posted_at:
+        return False
+    return job.posted_at >= (now - timedelta(hours=seed_recent_hours))
+
+
 def run_once(cfg: dict, *, db_path: str) -> None:
     tz = ZoneInfo(cfg["schedule"]["timezone"])
     email_cfg = resolve_email_config(cfg)
+    now = datetime.now(tz)
 
     include_patterns = compile_keywords(cfg["filters"]["include_keywords"])
     exclude_patterns = compile_keywords(cfg["filters"]["exclude_keywords"])
     location_cfg = cfg["filters"]["location"]
     notifications_cfg = cfg.get("notifications", {})
     skip_first_run = bool(notifications_cfg.get("skip_first_run", False))
+    seed_recent_hours = int(notifications_cfg.get("seed_recent_hours") or 0)
+    seed_require_posted_at = bool(notifications_cfg.get("seed_require_posted_at", True))
     ignore_error_statuses = set(notifications_cfg.get("ignore_error_statuses", []))
     source_display_map = {s["name"]: s.get("display_name", s["name"]) for s in cfg["sources"]}
 
@@ -126,8 +148,14 @@ def run_once(cfg: dict, *, db_path: str) -> None:
             if job_exists(conn, job.job_id):
                 continue
 
-            insert_job(conn, job, first_seen=datetime.now(tz))
-            if not seeded:
+            insert_job(conn, job, first_seen=now)
+            if should_notify_seed(
+                seeded=seeded,
+                job=job,
+                now=now,
+                seed_recent_hours=seed_recent_hours,
+                seed_require_posted_at=seed_require_posted_at,
+            ):
                 new_jobs.append(job)
 
     if new_jobs:
@@ -139,7 +167,7 @@ def run_once(cfg: dict, *, db_path: str) -> None:
             display_name = source_display_map.get(source_name, source_name)
             subject = format_subject(display_name, len(jobs))
             header = format_header(display_name, len(jobs))
-            body = build_jobs_email(jobs, header)
+            body = build_jobs_email(jobs, header, tz=tz)
             send_email(
                 smtp_host=email_cfg["smtp_host"],
                 smtp_port=email_cfg["smtp_port"],
@@ -150,7 +178,7 @@ def run_once(cfg: dict, *, db_path: str) -> None:
                 subject=subject,
                 body=body,
             )
-            mark_notified(conn, [job.job_id for job in jobs], notified_at=datetime.now(tz))
+            mark_notified(conn, [job.job_id for job in jobs], notified_at=now)
 
 
 def run_scheduler(cfg: dict, *, db_path: str) -> None:
@@ -162,6 +190,8 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
     location_cfg = cfg["filters"]["location"]
     notifications_cfg = cfg.get("notifications", {})
     skip_first_run = bool(notifications_cfg.get("skip_first_run", False))
+    seed_recent_hours = int(notifications_cfg.get("seed_recent_hours") or 0)
+    seed_require_posted_at = bool(notifications_cfg.get("seed_require_posted_at", True))
     ignore_error_statuses = set(notifications_cfg.get("ignore_error_statuses", []))
     source_display_map = {s["name"]: s.get("display_name", s["name"]) for s in cfg["sources"]}
 
@@ -253,7 +283,13 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
                     continue
 
                 insert_job(conn, job, first_seen=now)
-                if not seeded:
+                if should_notify_seed(
+                    seeded=seeded,
+                    job=job,
+                    now=now,
+                    seed_recent_hours=seed_recent_hours,
+                    seed_require_posted_at=seed_require_posted_at,
+                ):
                     new_jobs.append(job)
 
             if new_jobs:
@@ -265,7 +301,7 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
                     display_name = source_display_map.get(source_name, source_name)
                     subject = format_subject(display_name, len(jobs))
                     header = format_header(display_name, len(jobs))
-                    body = build_jobs_email(jobs, header)
+                    body = build_jobs_email(jobs, header, tz=tz)
                     try:
                         send_email(
                             smtp_host=email_cfg["smtp_host"],

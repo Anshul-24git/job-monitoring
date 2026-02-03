@@ -10,6 +10,8 @@ email:
 
 notifications:
   skip_first_run: true
+  seed_recent_hours: 24
+  seed_require_posted_at: true
   ignore_error_statuses:
     - 404
     - 410
