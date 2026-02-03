@@ -4,6 +4,7 @@ from .ashby import fetch_ashby_jobs
 from .generic import fetch_generic_jobs
 from .greenhouse import fetch_greenhouse_jobs
 from .lever import fetch_lever_jobs
+from .microsoft import fetch_microsoft_jobs
 from .smartrecruiters import fetch_smartrecruiters_jobs
 from .workday import fetch_workday_jobs
 
@@ -21,6 +22,8 @@ def detect_kind_from_url(url: str) -> str:
         return "workday"
     if "smartrecruiters.com" in host:
         return "smartrecruiters"
+    if "apply.careers.microsoft.com" in host or "careers.microsoft.com" in host:
+        return "microsoft"
 
     return "generic"
 
@@ -38,6 +41,8 @@ def fetch_jobs_for_source(source: dict, session) -> list:
         return fetch_workday_jobs(source, session)
     if kind == "smartrecruiters":
         return fetch_smartrecruiters_jobs(source, session)
+    if kind == "microsoft":
+        return fetch_microsoft_jobs(source, session)
     if kind == "bamboohr":
         return fetch_generic_jobs(source, session)
 
