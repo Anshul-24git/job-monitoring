@@ -1,5 +1,6 @@
 from urllib.parse import urlparse
 
+from .apple import fetch_apple_jobs
 from .ashby import fetch_ashby_jobs
 from .generic import fetch_generic_jobs
 from .greenhouse import fetch_greenhouse_jobs
@@ -24,6 +25,8 @@ def detect_kind_from_url(url: str) -> str:
         return "smartrecruiters"
     if "apply.careers.microsoft.com" in host or "careers.microsoft.com" in host:
         return "microsoft"
+    if "jobs.apple.com" in host:
+        return "apple"
 
     return "generic"
 
@@ -43,6 +46,8 @@ def fetch_jobs_for_source(source: dict, session) -> list:
         return fetch_smartrecruiters_jobs(source, session)
     if kind == "microsoft":
         return fetch_microsoft_jobs(source, session)
+    if kind == "apple":
+        return fetch_apple_jobs(source, session)
     if kind == "bamboohr":
         return fetch_generic_jobs(source, session)
 
