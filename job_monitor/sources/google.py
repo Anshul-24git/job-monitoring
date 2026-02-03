@@ -30,6 +30,24 @@ def _extract_tokens(html: str) -> Tuple[str, str, str]:
     at = find_key("SNlM0e")
     bl = find_key("bl") or find_key("cfb2h")
 
+    if "WIZ_global_data" in html and (not f_sid or not bl or not at):
+        match = re.search(r'WIZ_global_data\\s*=\\s*(\\{.*?\\})\\s*;', html, re.S)
+        if match:
+            raw = match.group(1)
+            data = None
+            try:
+                data = json.loads(raw)
+            except Exception:
+                data = None
+            if isinstance(data, dict):
+                f_sid = f_sid or data.get("FdrFJe") or data.get("f.sid", "")
+                bl = bl or data.get("cfb2h") or data.get("bl", "")
+                at = at or data.get("SNlM0e", "")
+            else:
+                f_sid = f_sid or find_key("FdrFJe")
+                bl = bl or find_key("cfb2h")
+                at = at or find_key("SNlM0e")
+
     if not f_sid or not bl:
         for match in re.finditer(r'https://www\\.google\\.com[^"\\s]+batchexecute\\?[^"\\s]+', html):
             try:
