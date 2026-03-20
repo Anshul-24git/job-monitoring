@@ -1,5 +1,5 @@
 from typing import List
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 from ..http_utils import request_with_retries
 from ..models import Job
@@ -16,6 +16,12 @@ def extract_company_slug(url: str) -> str:
 
 def fetch_greenhouse_jobs(source: dict, session) -> List[Job]:
     company = source.get("company") or extract_company_slug(source["url"])
+    query = parse_qs(urlparse(source["url"]).query)
+    department_ids = {
+        int(value)
+        for value in (source.get("greenhouse_department_ids") or query.get("departments[]") or query.get("departments") or [])
+        if str(value).isdigit()
+    }
     api_url = f"https://boards-api.greenhouse.io/v1/boards/{company}/jobs?content=true"
 
     resp = request_with_retries(session, "GET", api_url, timeout=15)
@@ -24,6 +30,15 @@ def fetch_greenhouse_jobs(source: dict, session) -> List[Job]:
 
     jobs: List[Job] = []
     for item in data.get("jobs", []):
+        if department_ids:
+            item_departments = {
+                int(dept.get("id"))
+                for dept in item.get("departments", [])
+                if isinstance(dept, dict) and str(dept.get("id", "")).isdigit()
+            }
+            if not item_departments.intersection(department_ids):
+                continue
+
         title = normalize_text(item.get("title"))
         url = item.get("absolute_url")
         location = normalize_text(item.get("location", {}).get("name"))

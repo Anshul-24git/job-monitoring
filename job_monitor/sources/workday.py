@@ -96,13 +96,15 @@ def fetch_workday_jobs(source: dict, session) -> List[Job]:
         search_text = query.get("q")[0]
 
     applied_facets = _extract_applied_facets(query)
+    if source.get("workday_ignore_query_facets"):
+        applied_facets = {}
     sort_by = None
     if query.get("sortBy"):
         sort_by = query.get("sortBy")[0]
 
     jobs: List[Job] = []
     offset = 0
-    limit = 50
+    limit = int(source.get("workday_limit", 50))
 
     while True:
         params = {

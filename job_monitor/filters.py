@@ -24,7 +24,8 @@ REMOTE_US = re.compile(r"\b(remote)\b.*\b(us|u\.s\.|usa|united states)\b|\b(us)\
 CITY_STATE = re.compile(r",\s*([A-Z]{2})(\s+\d{5})?\b")
 NON_US_HINTS = re.compile(
     r"\b(canada|toronto|vancouver|ontario|quebec|british columbia|uk|united kingdom|london|india|"
-    r"bangalore|bengaluru|hyderabad|australia|sydney|germany|berlin|singapore|mexico)\b",
+    r"england|bangalore|bengaluru|hyderabad|australia|sydney|germany|berlin|singapore|mexico|"
+    r"mississauga|dublin|belfast|pune|noida|glasgow|paris|france|ireland|poland|japan|tokyo|emea|europe)\b",
     re.I,
 )
 
@@ -35,11 +36,18 @@ def compile_keywords(keywords: Iterable[str]) -> List[re.Pattern]:
         kw = normalize_text(kw).lower()
         if not kw:
             continue
-        if re.fullmatch(r"[a-z0-9]+", kw) and len(kw) <= 4:
+        if re.fullmatch(r"[a-z0-9]+", kw):
             patterns.append(re.compile(rf"\b{re.escape(kw)}\b", re.I))
         else:
             patterns.append(re.compile(re.escape(kw), re.I))
     return patterns
+
+
+def extend_patterns(base_patterns: List[re.Pattern], keywords: Iterable[str]) -> List[re.Pattern]:
+    extra_patterns = compile_keywords(keywords)
+    if not extra_patterns:
+        return base_patterns
+    return [*base_patterns, *extra_patterns]
 
 
 def matches_any(text: str, patterns: List[re.Pattern]) -> bool:
@@ -49,11 +57,17 @@ def matches_any(text: str, patterns: List[re.Pattern]) -> bool:
     return False
 
 
-def is_us_location(location: str, *, allow_remote_without_us_signal: bool, assume_us_only: bool) -> bool:
-    if not location:
-        return assume_us_only
-
-    loc = location.strip()
+def is_us_location(
+    location: str,
+    *,
+    allow_remote_without_us_signal: bool,
+    assume_us_only: bool,
+    context_text: str = "",
+) -> bool:
+    loc = normalize_text(location)
+    fallback = normalize_text(context_text)
+    if not loc:
+        loc = fallback
     if not loc:
         return assume_us_only
 
@@ -84,6 +98,7 @@ def matches_filters(
     include_patterns: List[re.Pattern],
     exclude_patterns: List[re.Pattern],
     location: str,
+    url: str,
     us_only: bool,
     allow_remote_without_us_signal: bool,
     assume_us_only: bool,
@@ -100,8 +115,8 @@ def matches_filters(
         location,
         allow_remote_without_us_signal=allow_remote_without_us_signal,
         assume_us_only=assume_us_only,
+        context_text=f"{title} {url}",
     ):
         return False
 
     return True
-

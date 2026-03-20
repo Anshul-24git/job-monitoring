@@ -3,7 +3,7 @@
 Monitor company job boards for US-based software engineering roles and get notified by email when new jobs appear.
 
 ## Features
-- Supports Greenhouse, Lever, Workday, SmartRecruiters, Ashby (best-effort), plus generic HTML/JSON-LD pages
+- Supports Greenhouse, Lever, Workday, SmartRecruiters, Ashby (best-effort), Expedia (Playwright), plus generic HTML/JSON-LD pages
 - Per-source polling intervals
 - US-only filtering with optional remote support
 - Keyword include/exclude filtering
@@ -13,10 +13,11 @@ Monitor company job boards for US-based software engineering roles and get notif
 ## Quick Start
 1. Create and activate a Python venv (optional but recommended).
 2. `pip install -r requirements.txt`
-3. `cp config.example.yaml config.yaml`
-4. Set your Gmail App Password as an env var:
+3. `python -m playwright install chromium` (required for Expedia source)
+4. `cp config.example.yaml config.yaml`
+5. Set your Gmail App Password as an env var:
    - `export JOB_MONITOR_GMAIL_APP_PASSWORD="your_app_password"`
-5. Run:
+6. Run:
    - `python -m job_monitor --config config.yaml`
 
 Optional: you can also put the app password in a `.env` file and set `env_file: .env` in config.

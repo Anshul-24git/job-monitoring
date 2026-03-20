@@ -1,7 +1,7 @@
 import smtplib
 from datetime import datetime
 from email.message import EmailMessage
-from typing import Iterable, List
+from typing import List
 
 from .models import Job
 
@@ -39,17 +39,25 @@ def send_email(
     user: str,
     app_password: str,
     sender: str,
-    recipient: str,
+    recipient: str | List[str],
     subject: str,
     body: str,
 ) -> None:
+    recipients: List[str]
+    if isinstance(recipient, str):
+        recipients = [part.strip() for part in recipient.split(",") if part.strip()]
+    else:
+        recipients = [part.strip() for part in recipient if isinstance(part, str) and part.strip()]
+    if not recipients:
+        raise ValueError("No recipients provided")
+
     msg = EmailMessage()
     msg["From"] = sender
-    msg["To"] = recipient
+    msg["To"] = ", ".join(recipients)
     msg["Subject"] = subject
     msg.set_content(body)
 
     with smtplib.SMTP(smtp_host, smtp_port) as server:
         server.starttls()
         server.login(user, app_password)
-        server.send_message(msg)
+        server.send_message(msg, to_addrs=recipients)

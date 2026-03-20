@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Tuple
 import requests
 from zoneinfo import ZoneInfo
 
-from .filters import compile_keywords, matches_filters
+from .filters import compile_keywords, extend_patterns, matches_filters
 from .http_utils import build_session
 from .sources import detect_kind_from_url, fetch_jobs_for_source
 
@@ -35,13 +35,16 @@ def run_diagnostics(cfg: Dict[str, Any], *, output_path: str | None = None) -> D
 
         try:
             jobs = fetch_jobs_for_source(source, session)
+            source_include_patterns = extend_patterns(include_patterns, source.get("include_keywords", []))
+            source_exclude_patterns = extend_patterns(exclude_patterns, source.get("exclude_keywords", []))
             matched = 0
             for job in jobs:
                 if matches_filters(
                     job.title,
-                    include_patterns=include_patterns,
-                    exclude_patterns=exclude_patterns,
+                    include_patterns=source_include_patterns,
+                    exclude_patterns=source_exclude_patterns,
                     location=job.location,
+                    url=job.url,
                     us_only=location_cfg.get("us_only", True),
                     allow_remote_without_us_signal=location_cfg.get("allow_remote_without_us_signal", False),
                     assume_us_only=source.get("assume_us_only", False),
@@ -110,4 +113,3 @@ def _write_report(path: str, report: Dict[str, Any]) -> None:
         os.makedirs(output_dir, exist_ok=True)
     with open(path, "w", encoding="utf-8") as handle:
         json.dump(report, handle, indent=2, ensure_ascii=False)
-

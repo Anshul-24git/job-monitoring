@@ -10,6 +10,21 @@ class ConfigError(RuntimeError):
     pass
 
 
+def _normalize_recipients(value: Any) -> List[str]:
+    if isinstance(value, str):
+        parts = [part.strip() for part in value.split(",")]
+        return [part for part in parts if part]
+    if isinstance(value, list):
+        recipients: List[str] = []
+        for item in value:
+            if isinstance(item, str):
+                email = item.strip()
+                if email:
+                    recipients.append(email)
+        return recipients
+    return []
+
+
 def load_config(path: str) -> Dict[str, Any]:
     with open(path, "r", encoding="utf-8") as handle:
         cfg = yaml.safe_load(handle) or {}
@@ -45,6 +60,8 @@ def load_config(path: str) -> Dict[str, Any]:
     cfg["notifications"].setdefault("skip_first_run", False)
     cfg["notifications"].setdefault("seed_recent_hours", 0)
     cfg["notifications"].setdefault("seed_require_posted_at", True)
+    cfg["notifications"].setdefault("notify_recent_hours", 0)
+    cfg["notifications"].setdefault("notify_require_posted_at", True)
     cfg["notifications"].setdefault("ignore_error_statuses", [404, 410])
 
     auto_sources = cfg.get("auto_sources") or {}
@@ -107,7 +124,11 @@ def resolve_email_config(cfg: Dict[str, Any]) -> Dict[str, Any]:
     if not app_password:
         raise ConfigError("Missing Gmail app password. Set app_password or app_password_env.")
 
-    required_fields = ["user", "from", "to", "smtp_host", "smtp_port"]
+    recipients = _normalize_recipients(email_cfg.get("to"))
+    if not recipients:
+        raise ConfigError("Missing email config field: to")
+
+    required_fields = ["user", "from", "smtp_host", "smtp_port"]
     for field in required_fields:
         if not email_cfg.get(field):
             raise ConfigError(f"Missing email config field: {field}")
@@ -117,7 +138,7 @@ def resolve_email_config(cfg: Dict[str, Any]) -> Dict[str, Any]:
         "smtp_port": int(email_cfg["smtp_port"]),
         "user": email_cfg["user"],
         "from": email_cfg["from"],
-        "to": email_cfg["to"],
+        "to": recipients,
         "app_password": app_password,
         "notify_on_errors": bool(email_cfg.get("notify_on_errors", True)),
         "error_email_cooldown_minutes": int(email_cfg.get("error_email_cooldown_minutes", 60)),

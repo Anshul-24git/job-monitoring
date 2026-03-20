@@ -9,10 +9,11 @@ from zoneinfo import ZoneInfo
 
 from .config import resolve_email_config
 from .db import has_jobs_for_source, init_db, insert_job, job_exists, mark_notified
-from .filters import compile_keywords, matches_filters
+from .filters import compile_keywords, extend_patterns, matches_filters
 from .http_utils import build_session
 from .notify import build_error_email, build_jobs_email, send_email
 from .sources import fetch_jobs_for_source
+from .utils import is_date_only_posted_at
 
 
 logger = logging.getLogger(__name__)
@@ -52,15 +53,13 @@ def send_error_notification(email_cfg: dict, source_name: str, error_message: st
 
 
 def format_subject(source_name: str, count: int) -> str:
-    if count == 1:
-        return f"New job from {source_name}, check them out."
-    return f"New jobs from {source_name}, check them out."
+    noun = "job" if count == 1 else "jobs"
+    return f"{count} new {noun} from {source_name}, check them out."
 
 
 def format_header(source_name: str, count: int) -> str:
-    if count == 1:
-        return f"New job from {source_name}, check them out:"
-    return f"New jobs from {source_name}, check them out:"
+    noun = "job" if count == 1 else "jobs"
+    return f"{count} new {noun} from {source_name}, check them out:"
 
 
 def should_notify_seed(
@@ -82,6 +81,25 @@ def should_notify_seed(
     return job.posted_at >= (now - timedelta(hours=seed_recent_hours))
 
 
+def should_notify_recent(
+    *,
+    job,
+    now: datetime,
+    notify_recent_hours: int,
+    notify_require_posted_at: bool,
+) -> bool:
+    if not notify_recent_hours:
+        return True
+    if not job.posted_at:
+        return not notify_require_posted_at
+    return job.posted_at >= (now - timedelta(hours=notify_recent_hours))
+
+
+def normalize_job_posted_at(job, *, now: datetime) -> None:
+    if job.posted_at is None or is_date_only_posted_at(job):
+        job.posted_at = now
+
+
 def run_once(cfg: dict, *, db_path: str) -> None:
     tz = ZoneInfo(cfg["schedule"]["timezone"])
     email_cfg = resolve_email_config(cfg)
@@ -94,6 +112,8 @@ def run_once(cfg: dict, *, db_path: str) -> None:
     skip_first_run = bool(notifications_cfg.get("skip_first_run", False))
     seed_recent_hours = int(notifications_cfg.get("seed_recent_hours") or 0)
     seed_require_posted_at = bool(notifications_cfg.get("seed_require_posted_at", True))
+    notify_recent_hours = int(notifications_cfg.get("notify_recent_hours") or 0)
+    notify_require_posted_at = bool(notifications_cfg.get("notify_require_posted_at", True))
     ignore_error_statuses = set(notifications_cfg.get("ignore_error_statuses", []))
     source_display_map = {s["name"]: s.get("display_name", s["name"]) for s in cfg["sources"]}
 
@@ -104,6 +124,8 @@ def run_once(cfg: dict, *, db_path: str) -> None:
     new_jobs: List = []
 
     for source in cfg["sources"]:
+        source_include_patterns = extend_patterns(include_patterns, source.get("include_keywords", []))
+        source_exclude_patterns = extend_patterns(exclude_patterns, source.get("exclude_keywords", []))
         try:
             jobs = fetch_jobs_for_source(source, session)
         except Exception as exc:
@@ -132,13 +154,19 @@ def run_once(cfg: dict, *, db_path: str) -> None:
             continue
 
         seeded = skip_first_run and not has_jobs_for_source(conn, source["name"])
+        source_seed_recent_hours = int(source.get("seed_recent_hours", seed_recent_hours) or 0)
+        source_seed_require_posted_at = bool(source.get("seed_require_posted_at", seed_require_posted_at))
+        source_notify_recent_hours = int(source.get("notify_recent_hours", notify_recent_hours) or 0)
+        source_notify_require_posted_at = bool(source.get("notify_require_posted_at", notify_require_posted_at))
 
         for job in jobs:
+            normalize_job_posted_at(job, now=now)
             if not matches_filters(
                 job.title,
-                include_patterns=include_patterns,
-                exclude_patterns=exclude_patterns,
+                include_patterns=source_include_patterns,
+                exclude_patterns=source_exclude_patterns,
                 location=job.location,
+                url=job.url,
                 us_only=location_cfg.get("us_only", True),
                 allow_remote_without_us_signal=location_cfg.get("allow_remote_without_us_signal", False),
                 assume_us_only=source.get("assume_us_only", False),
@@ -153,8 +181,13 @@ def run_once(cfg: dict, *, db_path: str) -> None:
                 seeded=seeded,
                 job=job,
                 now=now,
-                seed_recent_hours=seed_recent_hours,
-                seed_require_posted_at=seed_require_posted_at,
+                seed_recent_hours=source_seed_recent_hours,
+                seed_require_posted_at=source_seed_require_posted_at,
+            ) and should_notify_recent(
+                job=job,
+                now=now,
+                notify_recent_hours=source_notify_recent_hours,
+                notify_require_posted_at=source_notify_require_posted_at,
             ):
                 new_jobs.append(job)
 
@@ -192,6 +225,8 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
     skip_first_run = bool(notifications_cfg.get("skip_first_run", False))
     seed_recent_hours = int(notifications_cfg.get("seed_recent_hours") or 0)
     seed_require_posted_at = bool(notifications_cfg.get("seed_require_posted_at", True))
+    notify_recent_hours = int(notifications_cfg.get("notify_recent_hours") or 0)
+    notify_require_posted_at = bool(notifications_cfg.get("notify_require_posted_at", True))
     ignore_error_statuses = set(notifications_cfg.get("ignore_error_statuses", []))
     source_display_map = {s["name"]: s.get("display_name", s["name"]) for s in cfg["sources"]}
 
@@ -229,6 +264,8 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
                 continue
 
             source = state["source"]
+            source_include_patterns = extend_patterns(include_patterns, source.get("include_keywords", []))
+            source_exclude_patterns = extend_patterns(exclude_patterns, source.get("exclude_keywords", []))
             try:
                 jobs = fetch_jobs_for_source(source, session)
             except Exception as exc:
@@ -267,12 +304,18 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
 
             new_jobs: List = []
             seeded = skip_first_run and not has_jobs_for_source(conn, source["name"])
+            source_seed_recent_hours = int(source.get("seed_recent_hours", seed_recent_hours) or 0)
+            source_seed_require_posted_at = bool(source.get("seed_require_posted_at", seed_require_posted_at))
+            source_notify_recent_hours = int(source.get("notify_recent_hours", notify_recent_hours) or 0)
+            source_notify_require_posted_at = bool(source.get("notify_require_posted_at", notify_require_posted_at))
             for job in jobs:
+                normalize_job_posted_at(job, now=now)
                 if not matches_filters(
                     job.title,
-                    include_patterns=include_patterns,
-                    exclude_patterns=exclude_patterns,
+                    include_patterns=source_include_patterns,
+                    exclude_patterns=source_exclude_patterns,
                     location=job.location,
+                    url=job.url,
                     us_only=location_cfg.get("us_only", True),
                     allow_remote_without_us_signal=location_cfg.get("allow_remote_without_us_signal", False),
                     assume_us_only=source.get("assume_us_only", False),
@@ -287,8 +330,13 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
                     seeded=seeded,
                     job=job,
                     now=now,
-                    seed_recent_hours=seed_recent_hours,
-                    seed_require_posted_at=seed_require_posted_at,
+                    seed_recent_hours=source_seed_recent_hours,
+                    seed_require_posted_at=source_seed_require_posted_at,
+                ) and should_notify_recent(
+                    job=job,
+                    now=now,
+                    notify_recent_hours=source_notify_recent_hours,
+                    notify_require_posted_at=source_notify_require_posted_at,
                 ):
                     new_jobs.append(job)
 
