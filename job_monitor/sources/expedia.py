@@ -531,7 +531,14 @@ def fetch_expedia_jobs(source: dict, session) -> List[Job]:
                     return
 
             page.on("response", on_response)
-            page.goto(source["url"], wait_until="domcontentloaded", timeout=timeout_ms)
+            try:
+                page.goto(source["url"], wait_until="domcontentloaded", timeout=timeout_ms)
+            except Exception:
+                try:
+                    context.close()
+                finally:
+                    browser.close()
+                raise
             page.wait_for_timeout(wait_ms)
             _dismiss_cookie_banner(page)
             _expand_results(page, max_actions=max_actions, wait_ms=wait_ms)

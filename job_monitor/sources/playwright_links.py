@@ -136,64 +136,71 @@ def fetch_playwright_links_jobs(source: dict, session) -> List[Job]:
     exclude_text_patterns |= DEFAULT_EXCLUDE_TEXT
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=headless)
-        page = browser.new_page(viewport={"width": 1440, "height": 2200})
-        page.goto(source_url, wait_until="domcontentloaded", timeout=timeout_ms)
-        page.wait_for_timeout(wait_ms)
+        browser = None
+        try:
+            browser = p.chromium.launch(headless=headless)
+            page = browser.new_page(viewport={"width": 1440, "height": 2200})
+            page.goto(source_url, wait_until="domcontentloaded", timeout=timeout_ms)
+            page.wait_for_timeout(wait_ms)
 
-        for _ in range(max(scroll_rounds, 0)):
-            page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
-            page.wait_for_timeout(scroll_wait_ms)
+            for _ in range(max(scroll_rounds, 0)):
+                page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
+                page.wait_for_timeout(scroll_wait_ms)
 
-        for _ in range(max(load_more_clicks, 0)):
-            clicked_more = page.evaluate(
+            for _ in range(max(load_more_clicks, 0)):
+                clicked_more = page.evaluate(
+                    """
+                    () => {
+                      const tokens = ['load more', 'show more', 'view more', 'more jobs', 'see more', 'show next'];
+                      const nodes = Array.from(document.querySelectorAll('button, a[role="button"], a'));
+                      for (const node of nodes) {
+                        const text = ((node.innerText || node.textContent || '').trim().toLowerCase());
+                        if (!text) continue;
+                        if (!tokens.some((token) => text.includes(token))) continue;
+                        if (node.hasAttribute('disabled') || node.getAttribute('aria-disabled') === 'true') continue;
+                        node.click();
+                        return true;
+                      }
+                      return false;
+                    }
+                    """
+                )
+                if not clicked_more:
+                    break
+                page.wait_for_timeout(scroll_wait_ms)
+                page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
+                page.wait_for_timeout(scroll_wait_ms)
+
+            anchors = page.evaluate(
                 """
                 () => {
-                  const tokens = ['load more', 'show more', 'view more', 'more jobs', 'see more', 'show next'];
-                  const nodes = Array.from(document.querySelectorAll('button, a[role="button"], a'));
-                  for (const node of nodes) {
-                    const text = ((node.innerText || node.textContent || '').trim().toLowerCase());
-                    if (!text) continue;
-                    if (!tokens.some((token) => text.includes(token))) continue;
-                    if (node.hasAttribute('disabled') || node.getAttribute('aria-disabled') === 'true') continue;
-                    node.click();
-                    return true;
+                  const out = [];
+                  for (const a of document.querySelectorAll('a[href]')) {
+                    const href = (a.getAttribute('href') || '').trim();
+                    const text = (a.innerText || a.textContent || '').trim();
+                    if (!href || !text) continue;
+                    let card = a.closest('article, li, section, tr, div[class*="job"], div[data-job-id], div[data-automation-id]');
+                    if (!card) card = a.parentElement;
+                    const cardText = ((card?.innerText || card?.textContent || '')).trim();
+                    out.push({
+                      href,
+                      text,
+                      cardText,
+                      ariaLabel: (a.getAttribute('aria-label') || '').trim(),
+                      titleAttr: (a.getAttribute('title') || '').trim(),
+                    });
                   }
-                  return false;
+                  return out;
                 }
                 """
             )
-            if not clicked_more:
-                break
-            page.wait_for_timeout(scroll_wait_ms)
-            page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
-            page.wait_for_timeout(scroll_wait_ms)
-
-        anchors = page.evaluate(
-            """
-            () => {
-              const out = [];
-              for (const a of document.querySelectorAll('a[href]')) {
-                const href = (a.getAttribute('href') || '').trim();
-                const text = (a.innerText || a.textContent || '').trim();
-                if (!href || !text) continue;
-                let card = a.closest('article, li, section, tr, div[class*="job"], div[data-job-id], div[data-automation-id]');
-                if (!card) card = a.parentElement;
-                const cardText = ((card?.innerText || card?.textContent || '')).trim();
-                out.push({
-                  href,
-                  text,
-                  cardText,
-                  ariaLabel: (a.getAttribute('aria-label') || '').trim(),
-                  titleAttr: (a.getAttribute('title') || '').trim(),
-                });
-              }
-              return out;
-            }
-            """
-        )
-        current_page_url = page.url
-        browser.close()
+            current_page_url = page.url
+        finally:
+            if browser is not None:
+                try:
+                    browser.close()
+                except Exception:
+                    pass
 
     jobs: List[Job] = []
     seen = set()

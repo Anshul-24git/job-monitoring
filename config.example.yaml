@@ -119,7 +119,7 @@ sources:
     display_name: Goldman Sachs
     url: https://higher.gs.com/results?LOCATION=Albany|New%20York|Atlanta|Baltimore|Boston|Chicago|Dallas|Houston|Irving|Richardson|Denver|Detroit|Troy|Draper|Salt%20Lake%20City|Jersey%20City|Morristown|Menlo%20Park|Newport%20Beach|San%20Francisco|Miami|West%20Palm%20Beach|Norwalk|Philadelphia|Pittsburgh|Seattle|Washington|Wilmington&page=1&sort=POSTED_DATE
     kind: highergs
-    interval_minutes: 20
+    interval_minutes: 10
     assume_us_only: true
     seed_recent_hours: 0
   - name: Salesforce
@@ -172,6 +172,37 @@ sources:
     interval_minutes: 20
     assume_us_only: true
     seed_recent_hours: 0
+  - name: ServiceNow
+    url: https://careers.servicenow.com/jobs/?search=Software+Engineer&country=United+States&pagesize=20#results
+    kind: playwright_links
+    interval_minutes: 30
+    assume_us_only: true
+    seed_recent_hours: 0
+    playwright_link_patterns:
+      - /jobs/
+      - /job/
+  - name: Applied Materials
+    url: https://careers.appliedmaterials.com/careers?domain=appliedmaterials.com&query=Software+Engineer&start=0&location=United+States&sort_by=timestamp&filter_include_remote=1
+    kind: eightfold
+    interval_minutes: 20
+    assume_us_only: true
+    seed_recent_hours: 0
+  - name: StubHub
+    url: https://job-boards.greenhouse.io/stubhubinc?departments%5B%5D=4034328101&offices%5B%5D=4016793101&offices%5B%5D=4016794101&offices%5B%5D=4016792101&offices%5B%5D=4016791101&offices%5B%5D=4029220101&offices%5B%5D=4029221101&keyword=Software+Engineer
+    kind: greenhouse
+    company: stubhubinc
+    interval_minutes: 20
+    assume_us_only: true
+    seed_recent_hours: 0
+  - name: QuinStreet
+    url: https://www.quinstreet.com/careers/?gh_jid=7605753&gh_src=po1n8bwm1us&__jvst=Job+Board&__jvsd=LinkedIn&source=LinkedIn
+    kind: playwright_links
+    interval_minutes: 30
+    assume_us_only: true
+    seed_recent_hours: 0
+    playwright_link_patterns:
+      - gh_jid=
+      - /careers/
   - name: Cisco
     url: https://careers.cisco.com/global/en/search-results?keywords=Software%20Engineer
     kind: playwright_links
@@ -283,10 +314,29 @@ sources:
     url: https://www.coinbase.com/careers/positions?search=software%2520engineer
     interval_minutes: 20
     assume_us_only: true
+    enabled: false
   - name: Asana (Direct)
     url: https://asana.com/jobs/all
     interval_minutes: 20
     assume_us_only: true
+  - name: CaptivateIQ
+    url: https://www.captivateiq.com/careers
+    kind: playwright_links
+    interval_minutes: 30
+    assume_us_only: true
+    include_keywords:
+      - software engineer
+      - software development engineer
+      - sde
+      - forward deployed engineer
+      - forward deployed ai engineer
+      - ai forward deployed engineer
+      - solution engineer
+      - solutions engineer
+    playwright_link_patterns:
+      - /careers/
+      - /job/
+      - gh_jid=
   - name: Spotify (Lever)
     url: https://jobs.lever.co/spotify/
     kind: lever
@@ -328,6 +378,14 @@ sources:
     playwright_link_patterns:
       - /job/
       - /us/en/job/
+  - name: Snowflake (Direct)
+    url: https://careers.snowflake.com/us/en/search-results?keywords=software%20engineer
+    kind: playwright_links
+    interval_minutes: 30
+    assume_us_only: true
+    playwright_link_patterns:
+      - /job/
+      - /us/en/job/
   - name: Barclays
     url: https://search.jobs.barclays/search-jobs/Software%20engineer/United%20States/13015/1/2/6252001/39x76/-98x5/50/2
     interval_minutes: 20
@@ -350,6 +408,7 @@ sources:
     company: grammarly
     interval_minutes: 20
     assume_us_only: true
+    enabled: false
   - name: Intel
     url: https://intel.wd1.myworkdayjobs.com/en-US/External?q=Software%20engineer&locations=1e4a4eb3adf101cc4e292078bf8199d0&locations=1e4a4eb3adf10146fd5c5276bf81eece&locations=da6b8032b879100204a63a809f6c0000&locations=1e4a4eb3adf101989587fd77bf8176d0&locations=1e4a4eb3adf10118b1dfe877bf8162d0&locations=1e4a4eb3adf10129d05fe377bf815dd0&locations=1e4a4eb3adf1019ec42cde77bf8158d0&locations=1e4a4eb3adf1018c4bf78f77bf8112d0&locations=1e4a4eb3adf101b8aec18a77bf810dd0&locations=1e4a4eb3adf1011246675c76bf81f8ce&locations=1e4a4eb3adf101fa2a777d76bf8116cf&locations=1e4a4eb3adf1016541777876bf8111cf&jobFamilyGroup=ace7a3d23b7e01a0544279031a0ec85c
     kind: playwright_links

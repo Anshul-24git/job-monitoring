@@ -54,7 +54,10 @@ def load_config(path: str) -> Dict[str, Any]:
     cfg["email"].setdefault("smtp_host", "smtp.gmail.com")
     cfg["email"].setdefault("smtp_port", 587)
     cfg["email"].setdefault("notify_on_errors", True)
-    cfg["email"].setdefault("error_email_cooldown_minutes", 60)
+    cfg["email"].setdefault("error_email_cooldown_minutes", 360)
+    cfg["email"].setdefault("error_notify_after_consecutive_failures", 2)
+    cfg["email"].setdefault("transient_error_notify_after_consecutive_failures", 3)
+    cfg["email"].setdefault("error_backoff_max_minutes", 360)
 
     cfg.setdefault("notifications", {})
     cfg["notifications"].setdefault("skip_first_run", False)
@@ -63,6 +66,13 @@ def load_config(path: str) -> Dict[str, Any]:
     cfg["notifications"].setdefault("notify_recent_hours", 0)
     cfg["notifications"].setdefault("notify_require_posted_at", True)
     cfg["notifications"].setdefault("ignore_error_statuses", [404, 410])
+    cfg["notifications"].setdefault("email_max_attempts", 3)
+    cfg["notifications"].setdefault("email_retry_initial_seconds", 5)
+    cfg["notifications"].setdefault("notification_retry_base_minutes", 10)
+    cfg["notifications"].setdefault("notification_retry_max_minutes", 120)
+    cfg["notifications"].setdefault("pending_notification_limit", 50)
+    cfg["notifications"].setdefault("recover_unnotified_since_last_success_hours", 48)
+    cfg["notifications"].setdefault("heartbeat_minutes", 30)
 
     auto_sources = cfg.get("auto_sources") or {}
     auto_sources_file = cfg.get("auto_sources_file")
@@ -141,5 +151,12 @@ def resolve_email_config(cfg: Dict[str, Any]) -> Dict[str, Any]:
         "to": recipients,
         "app_password": app_password,
         "notify_on_errors": bool(email_cfg.get("notify_on_errors", True)),
-        "error_email_cooldown_minutes": int(email_cfg.get("error_email_cooldown_minutes", 60)),
+        "error_email_cooldown_minutes": int(email_cfg.get("error_email_cooldown_minutes", 360)),
+        "error_notify_after_consecutive_failures": int(
+            email_cfg.get("error_notify_after_consecutive_failures", 2)
+        ),
+        "transient_error_notify_after_consecutive_failures": int(
+            email_cfg.get("transient_error_notify_after_consecutive_failures", 3)
+        ),
+        "error_backoff_max_minutes": int(email_cfg.get("error_backoff_max_minutes", 360)),
     }
