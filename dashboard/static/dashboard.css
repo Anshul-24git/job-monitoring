@@ -447,3 +447,10 @@ body[data-theme="dark"] .theme-toggle {
     grid-template-columns: 1fr;
   }
 }
+
+.snapshot-note {
+  margin: 14px 0 0;
+  max-width: 620px;
+  color: var(--muted);
+  font-size: 14px;
+}

@@ -23,6 +23,7 @@ DEFAULT_DB = BASE_DIR / "job_monitor.db"
 DEFAULT_LOG = BASE_DIR / "logs" / "job-monitor.log"
 DEFAULT_DIAGNOSTICS = BASE_DIR / "logs" / "diagnostics.json"
 DEFAULT_CONFIG = BASE_DIR / "config.yaml"
+DEFAULT_PUBLIC_SNAPSHOT = DASHBOARD_DIR / "public_snapshot.json"
 
 app = FastAPI(title="Job Monitor Dashboard")
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -173,17 +174,81 @@ def _fetch_db_stats(db_path: Path, *, source_display_map: Dict[str, str]) -> Dic
     }
 
 
+def _load_public_snapshot(path: Path) -> Dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            snapshot = json.load(handle)
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+    stats = snapshot.get("stats", {})
+    latest_jobs = []
+    for job in stats.get("latest_jobs", []):
+        latest_jobs.append(
+            {
+                "source": job.get("source", "Unknown"),
+                "title": job.get("title", "Untitled role"),
+                "location": job.get("location"),
+                "url": job.get("url", "#"),
+                "posted_at": _safe_fromiso(job.get("posted_at")),
+                "first_seen": _safe_fromiso(job.get("first_seen")),
+                "notified_at": _safe_fromiso(job.get("notified_at")),
+            }
+        )
+
+    loaded_stats = {
+        "total_jobs": stats.get("total_jobs", 0),
+        "jobs_last_24h": stats.get("jobs_last_24h", 0),
+        "unnotified": stats.get("unnotified", 0),
+        "latest_jobs": latest_jobs,
+        "by_source": stats.get("by_source", []),
+        "last_seen": _safe_fromiso(stats.get("last_seen")),
+    }
+
+    return {
+        "stats": loaded_stats,
+        "diagnostics": snapshot.get("diagnostics", {}),
+        "config_summary": snapshot.get("config_summary", {}),
+        "log_tail": snapshot.get("log_tail", []),
+        "generated_at": snapshot.get("generated_at"),
+    }
+
+
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request) -> HTMLResponse:
     db_path = Path(os.getenv("JOB_MONITOR_DB_PATH", str(DEFAULT_DB)))
     log_path = Path(os.getenv("JOB_MONITOR_LOG_PATH", str(DEFAULT_LOG)))
     diag_path = Path(os.getenv("JOB_MONITOR_DIAGNOSTICS_PATH", str(DEFAULT_DIAGNOSTICS)))
+    snapshot_path = Path(os.getenv("JOB_MONITOR_PUBLIC_SNAPSHOT", str(DEFAULT_PUBLIC_SNAPSHOT)))
 
     config_summary = _load_config_summary()
     source_display_map = config_summary.get("source_display_map", {})
-    stats = _fetch_db_stats(db_path, source_display_map=source_display_map)
-    diagnostics = _load_diagnostics(diag_path)
-    log_tail = _load_log_tail(log_path, limit=120)
+    public_snapshot = {}
+
+    if db_path.exists():
+        stats = _fetch_db_stats(db_path, source_display_map=source_display_map)
+        diagnostics = _load_diagnostics(diag_path)
+        log_tail = _load_log_tail(log_path, limit=120)
+        snapshot_generated_at = None
+    else:
+        public_snapshot = _load_public_snapshot(snapshot_path)
+        stats = public_snapshot.get(
+            "stats",
+            {
+                "total_jobs": 0,
+                "jobs_last_24h": 0,
+                "unnotified": 0,
+                "latest_jobs": [],
+                "by_source": [],
+                "last_seen": None,
+            },
+        )
+        diagnostics = public_snapshot.get("diagnostics", {})
+        log_tail = public_snapshot.get("log_tail", [])
+        config_summary = public_snapshot.get("config_summary") or config_summary
+        snapshot_generated_at = public_snapshot.get("generated_at")
 
     summary = diagnostics.get("summary") if diagnostics else {}
     sources_ok = summary.get("ok_sources")
@@ -203,5 +268,7 @@ def index(request: Request) -> HTMLResponse:
             "sources_error": sources_error,
             "config_summary": config_summary,
             "source_options": source_options,
+            "public_snapshot": bool(public_snapshot),
+            "snapshot_generated_at": snapshot_generated_at,
         },
     )

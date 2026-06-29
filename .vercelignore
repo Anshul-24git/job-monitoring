@@ -1,0 +1,13 @@
+.env
+.venv
+.DS_Store
+__pycache__
+*.pyc
+config.yaml
+job_monitor.db
+logs
+launchd
+.git
+.vercel
+.pytest_cache
+tests/__pycache__

@@ -1,0 +1,1296 @@
+{
+  "config_summary": {
+    "active_end": "23:59",
+    "active_start": "00:00",
+    "default_interval": 20,
+    "source_display_map": {
+      "Adobe (Direct)": "Adobe",
+      "Affirm (greenhouse)": "Affirm (greenhouse)",
+      "Airbnb": "Airbnb",
+      "Amazon": "Amazon",
+      "American Express": "American Express",
+      "Anthropic (greenhouse)": "Anthropic (greenhouse)",
+      "Apple": "Apple",
+      "Applied Materials": "Applied Materials",
+      "Asana (Direct)": "Asana",
+      "Atlassian": "Atlassian",
+      "Bank of America": "Bank of America",
+      "Barclays": "Barclays",
+      "Baseten (ashby)": "Baseten (ashby)",
+      "BlackRock": "BlackRock",
+      "CVS Health": "CVS Health",
+      "Capital One": "Capital One",
+      "CaptivateIQ": "CaptivateIQ",
+      "Chewy (Direct)": "Chewy",
+      "Chime (greenhouse)": "Chime (greenhouse)",
+      "Cisco": "Cisco",
+      "Citi": "Citi",
+      "Clerk (ashby)": "Clerk (ashby)",
+      "Cohere (ashby)": "Cohere (ashby)",
+      "Databricks (greenhouse)": "Databricks (greenhouse)",
+      "Deloitte": "Deloitte",
+      "Dropbox (Direct)": "Dropbox",
+      "Duolingo (Direct)": "Duolingo",
+      "EY": "EY",
+      "Expedia": "Expedia",
+      "FICO": "FICO",
+      "Figma (greenhouse)": "Figma (greenhouse)",
+      "Goldman": "Goldman Sachs",
+      "Google": "Google",
+      "HPE": "HPE",
+      "Instacart (greenhouse)": "Instacart (greenhouse)",
+      "Intel": "Intel",
+      "Intuit": "Intuit",
+      "Langchain (ashby)": "Langchain (ashby)",
+      "Linear (ashby)": "Linear (ashby)",
+      "Lyft": "Lyft",
+      "Mastercard": "Mastercard",
+      "Meta": "Meta",
+      "Microsoft": "Microsoft",
+      "Modal (ashby)": "Modal (ashby)",
+      "Morgan Stanley": "Morgan Stanley",
+      "NVIDIA": "NVIDIA",
+      "Netflix (Direct)": "Netflix",
+      "OpenAI": "OpenAI",
+      "PayPal": "PayPal",
+      "Peloton (greenhouse)": "Peloton (greenhouse)",
+      "Perplexity (ashby)": "Perplexity (ashby)",
+      "Pinterest (greenhouse)": "Pinterest (greenhouse)",
+      "Posthog (ashby)": "Posthog (ashby)",
+      "QuinStreet": "QuinStreet",
+      "Railway (ashby)": "Railway (ashby)",
+      "Ramp (ashby)": "Ramp (ashby)",
+      "Render (ashby)": "Render (ashby)",
+      "Replit (ashby)": "Replit (ashby)",
+      "S Of I (greenhouse)": "SoFi (greenhouse)",
+      "Salesforce": "Salesforce",
+      "Scaleai (greenhouse)": "Scale AI (greenhouse)",
+      "Sentry (ashby)": "Sentry (ashby)",
+      "ServiceNow": "ServiceNow",
+      "Snowflake (Direct)": "Snowflake",
+      "Spotify (Direct)": "Spotify",
+      "Spotify (Lever)": "Spotify",
+      "Stripe (greenhouse)": "Stripe (greenhouse)",
+      "StubHub": "StubHub",
+      "Supabase (ashby)": "Supabase (ashby)",
+      "T-Mobile": "T-Mobile",
+      "Twilio (greenhouse)": "Twilio (greenhouse)",
+      "Uber": "Uber",
+      "eBay": "eBay"
+    },
+    "sources_count": 73,
+    "timezone": "America/Chicago"
+  },
+  "diagnostics": {
+    "results": [
+      {
+        "display_name": "Apple",
+        "duration_seconds": 0.645,
+        "matched_jobs": 43,
+        "name": "Apple",
+        "raw_jobs": 100,
+        "status": "ok"
+      },
+      {
+        "display_name": "Microsoft",
+        "duration_seconds": 4.661,
+        "matched_jobs": 27,
+        "name": "Microsoft",
+        "raw_jobs": 50,
+        "status": "ok"
+      },
+      {
+        "display_name": "Amazon",
+        "duration_seconds": 11.536,
+        "matched_jobs": 50,
+        "name": "Amazon",
+        "raw_jobs": 61,
+        "status": "ok"
+      },
+      {
+        "display_name": "FICO",
+        "duration_seconds": 1.423,
+        "matched_jobs": 6,
+        "name": "FICO",
+        "raw_jobs": 42,
+        "status": "ok"
+      },
+      {
+        "display_name": "Capital One",
+        "duration_seconds": 0.217,
+        "matched_jobs": 0,
+        "name": "Capital One",
+        "raw_jobs": 0,
+        "status": "ok"
+      },
+      {
+        "display_name": "Goldman Sachs",
+        "duration_seconds": 3.187,
+        "matched_jobs": 58,
+        "name": "Goldman",
+        "raw_jobs": 59,
+        "status": "ok"
+      },
+      {
+        "display_name": "Salesforce",
+        "duration_seconds": 3.435,
+        "matched_jobs": 49,
+        "name": "Salesforce",
+        "raw_jobs": 414,
+        "status": "ok"
+      },
+      {
+        "display_name": "Bank of America",
+        "duration_seconds": 0.375,
+        "matched_jobs": 4,
+        "name": "Bank of America",
+        "raw_jobs": 50,
+        "status": "ok"
+      },
+      {
+        "display_name": "Intuit",
+        "duration_seconds": 22.898,
+        "matched_jobs": 0,
+        "name": "Intuit",
+        "raw_jobs": 18,
+        "status": "ok"
+      },
+      {
+        "display_name": "PayPal",
+        "duration_seconds": 4.033,
+        "matched_jobs": 41,
+        "name": "PayPal",
+        "raw_jobs": 100,
+        "status": "ok"
+      },
+      {
+        "display_name": "NVIDIA",
+        "duration_seconds": 4.688,
+        "matched_jobs": 22,
+        "name": "NVIDIA",
+        "raw_jobs": 100,
+        "status": "ok"
+      },
+      {
+        "display_name": "American Express",
+        "duration_seconds": 1.831,
+        "matched_jobs": 6,
+        "name": "American Express",
+        "raw_jobs": 10,
+        "status": "ok"
+      },
+      {
+        "display_name": "ServiceNow",
+        "duration_seconds": 10.699,
+        "matched_jobs": 0,
+        "name": "ServiceNow",
+        "raw_jobs": 0,
+        "status": "ok"
+      },
+      {
+        "display_name": "Applied Materials",
+        "duration_seconds": 3.983,
+        "matched_jobs": 12,
+        "name": "Applied Materials",
+        "raw_jobs": 100,
+        "status": "ok"
+      },
+      {
+        "display_name": "StubHub",
+        "duration_seconds": 0.27,
+        "matched_jobs": 0,
+        "name": "StubHub",
+        "raw_jobs": 0,
+        "status": "ok"
+      },
+      {
+        "display_name": "QuinStreet",
+        "duration_seconds": 10.938,
+        "matched_jobs": 0,
+        "name": "QuinStreet",
+        "raw_jobs": 1,
+        "status": "ok"
+      },
+      {
+        "display_name": "Cisco",
+        "duration_seconds": 11.086,
+        "matched_jobs": 6,
+        "name": "Cisco",
+        "raw_jobs": 10,
+        "status": "ok"
+      },
+      {
+        "display_name": "CVS Health",
+        "duration_seconds": 11.526,
+        "matched_jobs": 5,
+        "name": "CVS Health",
+        "raw_jobs": 10,
+        "status": "ok"
+      },
+      {
+        "display_name": "eBay",
+        "duration_seconds": 12.029,
+        "matched_jobs": 0,
+        "name": "eBay",
+        "raw_jobs": 10,
+        "status": "ok"
+      },
+      {
+        "display_name": "T-Mobile",
+        "duration_seconds": 11.259,
+        "matched_jobs": 1,
+        "name": "T-Mobile",
+        "raw_jobs": 10,
+        "status": "ok"
+      },
+      {
+        "display_name": "EY",
+        "duration_seconds": 21.625,
+        "matched_jobs": 10,
+        "name": "EY",
+        "raw_jobs": 25,
+        "status": "ok"
+      },
+      {
+        "display_name": "Mastercard",
+        "duration_seconds": 12.845,
+        "matched_jobs": 1,
+        "name": "Mastercard",
+        "raw_jobs": 5,
+        "status": "ok"
+      },
+      {
+        "display_name": "Meta",
+        "duration_seconds": 11.737,
+        "matched_jobs": 4,
+        "name": "Meta",
+        "raw_jobs": 10,
+        "status": "ok"
+      },
+      {
+        "display_name": "Google",
+        "duration_seconds": 1.798,
+        "matched_jobs": 62,
+        "name": "Google",
+        "raw_jobs": 100,
+        "status": "ok"
+      },
+      {
+        "display_name": "Airbnb",
+        "duration_seconds": 0.243,
+        "matched_jobs": 0,
+        "name": "Airbnb",
+        "raw_jobs": 0,
+        "status": "ok"
+      },
+      {
+        "display_name": "Lyft",
+        "duration_seconds": 0.298,
+        "matched_jobs": 0,
+        "name": "Lyft",
+        "raw_jobs": 0,
+        "status": "ok"
+      },
+      {
+        "display_name": "Expedia",
+        "duration_seconds": 33.167,
+        "matched_jobs": 33,
+        "name": "Expedia",
+        "raw_jobs": 161,
+        "status": "ok"
+      },
+      {
+        "display_name": "Atlassian",
+        "duration_seconds": 0.335,
+        "matched_jobs": 1,
+        "name": "Atlassian",
+        "raw_jobs": 68,
+        "status": "ok"
+      },
+      {
+        "display_name": "Uber",
+        "duration_seconds": 0.469,
+        "matched_jobs": 65,
+        "name": "Uber",
+        "raw_jobs": 135,
+        "status": "ok"
+      },
+      {
+        "display_name": "OpenAI",
+        "duration_seconds": 0.753,
+        "matched_jobs": 18,
+        "name": "OpenAI",
+        "raw_jobs": 662,
+        "status": "ok"
+      },
+      {
+        "display_name": "Dropbox",
+        "duration_seconds": 0.12,
+        "matched_jobs": 5,
+        "name": "Dropbox (Direct)",
+        "raw_jobs": 94,
+        "status": "ok"
+      },
+      {
+        "display_name": "Coinbase",
+        "duration_seconds": 0.159,
+        "matched_jobs": 35,
+        "name": "Coinbase (Direct)",
+        "raw_jobs": 219,
+        "status": "ok"
+      },
+      {
+        "display_name": "Asana",
+        "duration_seconds": 0.501,
+        "matched_jobs": 0,
+        "name": "Asana (Direct)",
+        "raw_jobs": 0,
+        "status": "ok"
+      },
+      {
+        "display_name": "Snowflake",
+        "duration_seconds": 20.556,
+        "matched_jobs": 3,
+        "name": "Snowflake (Direct)",
+        "raw_jobs": 10,
+        "status": "ok"
+      },
+      {
+        "display_name": "Spotify",
+        "duration_seconds": 1.87,
+        "matched_jobs": 6,
+        "name": "Spotify (Lever)",
+        "raw_jobs": 165,
+        "status": "ok"
+      },
+      {
+        "display_name": "Netflix",
+        "duration_seconds": 0.469,
+        "matched_jobs": 9,
+        "name": "Netflix (Direct)",
+        "raw_jobs": 10,
+        "status": "ok"
+      },
+      {
+        "display_name": "Duolingo",
+        "duration_seconds": 10.643,
+        "matched_jobs": 0,
+        "name": "Duolingo (Direct)",
+        "raw_jobs": 5,
+        "status": "ok"
+      },
+      {
+        "display_name": "Spotify",
+        "duration_seconds": 0.249,
+        "matched_jobs": 0,
+        "name": "Spotify (Direct)",
+        "raw_jobs": 0,
+        "status": "ok"
+      },
+      {
+        "display_name": "Adobe",
+        "duration_seconds": 1.194,
+        "matched_jobs": 113,
+        "name": "Adobe (Direct)",
+        "raw_jobs": 214,
+        "status": "ok"
+      },
+      {
+        "display_name": "HPE",
+        "duration_seconds": 20.632,
+        "matched_jobs": 0,
+        "name": "HPE",
+        "raw_jobs": 15,
+        "status": "ok"
+      },
+      {
+        "display_name": "Barclays",
+        "duration_seconds": 0.347,
+        "matched_jobs": 4,
+        "name": "Barclays",
+        "raw_jobs": 24,
+        "status": "ok"
+      },
+      {
+        "display_name": "Deloitte",
+        "duration_seconds": 1.591,
+        "matched_jobs": 3,
+        "name": "Deloitte",
+        "raw_jobs": 11,
+        "status": "ok"
+      },
+      {
+        "display_name": "BlackRock",
+        "duration_seconds": 0.335,
+        "matched_jobs": 3,
+        "name": "BlackRock",
+        "raw_jobs": 10,
+        "status": "ok"
+      },
+      {
+        "display_name": "Citi",
+        "duration_seconds": 0.372,
+        "matched_jobs": 0,
+        "name": "Citi",
+        "raw_jobs": 16,
+        "status": "ok"
+      },
+      {
+        "display_name": "Grammarly",
+        "duration_seconds": 0.121,
+        "matched_jobs": 2,
+        "name": "Grammarly",
+        "raw_jobs": 19,
+        "status": "ok"
+      },
+      {
+        "display_name": "Intel",
+        "duration_seconds": 11.06,
+        "matched_jobs": 9,
+        "name": "Intel",
+        "raw_jobs": 20,
+        "status": "ok"
+      },
+      {
+        "display_name": "Morgan Stanley",
+        "duration_seconds": 4.135,
+        "matched_jobs": 21,
+        "name": "Morgan Stanley",
+        "raw_jobs": 81,
+        "status": "ok"
+      },
+      {
+        "display_name": "Chewy",
+        "duration_seconds": 20.387,
+        "matched_jobs": 5,
+        "name": "Chewy (Direct)",
+        "raw_jobs": 10,
+        "status": "ok"
+      },
+      {
+        "display_name": "Anthropic",
+        "duration_seconds": 0.239,
+        "matched_jobs": 41,
+        "name": "Anthropic (greenhouse)",
+        "raw_jobs": 445,
+        "status": "ok"
+      },
+      {
+        "display_name": "Stripe",
+        "duration_seconds": 0.271,
+        "matched_jobs": 10,
+        "name": "Stripe (greenhouse)",
+        "raw_jobs": 515,
+        "status": "ok"
+      },
+      {
+        "display_name": "Databricks",
+        "duration_seconds": 0.34,
+        "matched_jobs": 34,
+        "name": "Databricks (greenhouse)",
+        "raw_jobs": 837,
+        "status": "ok"
+      },
+      {
+        "display_name": "Instacart",
+        "duration_seconds": 0.123,
+        "matched_jobs": 8,
+        "name": "Instacart (greenhouse)",
+        "raw_jobs": 129,
+        "status": "ok"
+      },
+      {
+        "display_name": "Pinterest",
+        "duration_seconds": 0.114,
+        "matched_jobs": 6,
+        "name": "Pinterest (greenhouse)",
+        "raw_jobs": 126,
+        "status": "ok"
+      },
+      {
+        "display_name": "Figma",
+        "duration_seconds": 0.142,
+        "matched_jobs": 21,
+        "name": "Figma (greenhouse)",
+        "raw_jobs": 152,
+        "status": "ok"
+      },
+      {
+        "display_name": "Twilio",
+        "duration_seconds": 0.143,
+        "matched_jobs": 6,
+        "name": "Twilio (greenhouse)",
+        "raw_jobs": 143,
+        "status": "ok"
+      },
+      {
+        "display_name": "Affirm",
+        "duration_seconds": 0.128,
+        "matched_jobs": 17,
+        "name": "Affirm (greenhouse)",
+        "raw_jobs": 151,
+        "status": "ok"
+      },
+      {
+        "display_name": "SoFi",
+        "duration_seconds": 0.16,
+        "matched_jobs": 6,
+        "name": "S Of I (greenhouse)",
+        "raw_jobs": 217,
+        "status": "ok"
+      },
+      {
+        "display_name": "Chime",
+        "duration_seconds": 0.092,
+        "matched_jobs": 8,
+        "name": "Chime (greenhouse)",
+        "raw_jobs": 64,
+        "status": "ok"
+      },
+      {
+        "display_name": "Peloton",
+        "duration_seconds": 0.11,
+        "matched_jobs": 0,
+        "name": "Peloton (greenhouse)",
+        "raw_jobs": 58,
+        "status": "ok"
+      },
+      {
+        "display_name": "Scale AI",
+        "duration_seconds": 0.205,
+        "matched_jobs": 25,
+        "name": "Scaleai (greenhouse)",
+        "raw_jobs": 173,
+        "status": "ok"
+      },
+      {
+        "display_name": "Cohere",
+        "duration_seconds": 2.441,
+        "matched_jobs": 0,
+        "name": "Cohere (ashby)",
+        "raw_jobs": 124,
+        "status": "ok"
+      },
+      {
+        "display_name": "Perplexity",
+        "duration_seconds": 2.096,
+        "matched_jobs": 1,
+        "name": "Perplexity (ashby)",
+        "raw_jobs": 79,
+        "status": "ok"
+      },
+      {
+        "display_name": "Render",
+        "duration_seconds": 0.713,
+        "matched_jobs": 5,
+        "name": "Render (ashby)",
+        "raw_jobs": 13,
+        "status": "ok"
+      },
+      {
+        "display_name": "Supabase",
+        "duration_seconds": 0.23,
+        "matched_jobs": 0,
+        "name": "Supabase (ashby)",
+        "raw_jobs": 37,
+        "status": "ok"
+      },
+      {
+        "display_name": "Posthog",
+        "duration_seconds": 0.444,
+        "matched_jobs": 0,
+        "name": "Posthog (ashby)",
+        "raw_jobs": 15,
+        "status": "ok"
+      },
+      {
+        "display_name": "Linear",
+        "duration_seconds": 1.282,
+        "matched_jobs": 0,
+        "name": "Linear (ashby)",
+        "raw_jobs": 19,
+        "status": "ok"
+      },
+      {
+        "display_name": "Ramp",
+        "duration_seconds": 0.422,
+        "matched_jobs": 23,
+        "name": "Ramp (ashby)",
+        "raw_jobs": 135,
+        "status": "ok"
+      },
+      {
+        "display_name": "Sentry",
+        "duration_seconds": 0.79,
+        "matched_jobs": 4,
+        "name": "Sentry (ashby)",
+        "raw_jobs": 38,
+        "status": "ok"
+      },
+      {
+        "display_name": "Replit",
+        "duration_seconds": 0.337,
+        "matched_jobs": 13,
+        "name": "Replit (ashby)",
+        "raw_jobs": 76,
+        "status": "ok"
+      },
+      {
+        "display_name": "Clerk",
+        "duration_seconds": 0.388,
+        "matched_jobs": 0,
+        "name": "Clerk (ashby)",
+        "raw_jobs": 3,
+        "status": "ok"
+      },
+      {
+        "display_name": "Railway",
+        "duration_seconds": 0.432,
+        "matched_jobs": 2,
+        "name": "Railway (ashby)",
+        "raw_jobs": 7,
+        "status": "ok"
+      },
+      {
+        "display_name": "Baseten",
+        "duration_seconds": 0.97,
+        "matched_jobs": 0,
+        "name": "Baseten (ashby)",
+        "raw_jobs": 48,
+        "status": "ok"
+      },
+      {
+        "display_name": "Modal",
+        "duration_seconds": 0.154,
+        "matched_jobs": 3,
+        "name": "Modal (ashby)",
+        "raw_jobs": 27,
+        "status": "ok"
+      },
+      {
+        "display_name": "Langchain",
+        "duration_seconds": 0.362,
+        "matched_jobs": 7,
+        "name": "Langchain (ashby)",
+        "raw_jobs": 95,
+        "status": "ok"
+      }
+    ],
+    "summary": {
+      "by_kind": {
+        "adobe": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "amazon": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "apple": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "ashby": {
+          "error": 0,
+          "ok": 15,
+          "total": 15
+        },
+        "atlassian": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "bankofamerica": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "capitalone": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "eightfold": {
+          "error": 0,
+          "ok": 4,
+          "total": 4
+        },
+        "expedia": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "generic": {
+          "error": 0,
+          "ok": 10,
+          "total": 10
+        },
+        "google": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "greenhouse": {
+          "error": 0,
+          "ok": 16,
+          "total": 16
+        },
+        "highergs": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "lever": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "microsoft": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "playwright_links": {
+          "error": 0,
+          "ok": 15,
+          "total": 15
+        },
+        "salesforce": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "uber": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        },
+        "workday": {
+          "error": 0,
+          "ok": 1,
+          "total": 1
+        }
+      },
+      "error_sources": 0,
+      "ok_sources": 74,
+      "total_matched_jobs": 982,
+      "total_raw_jobs": 6960,
+      "total_sources": 74
+    }
+  },
+  "generated_at": "2026-06-29T23:55:36.765135+00:00",
+  "log_tail": [
+    "Raw local logs are intentionally omitted from the public demo."
+  ],
+  "stats": {
+    "by_source": [
+      {
+        "count": 1493,
+        "source": "Google"
+      },
+      {
+        "count": 1372,
+        "source": "Microsoft"
+      },
+      {
+        "count": 1154,
+        "source": "Apple"
+      },
+      {
+        "count": 1141,
+        "source": "Amazon"
+      },
+      {
+        "count": 387,
+        "source": "NVIDIA"
+      },
+      {
+        "count": 274,
+        "source": "Adobe"
+      },
+      {
+        "count": 234,
+        "source": "Uber"
+      },
+      {
+        "count": 230,
+        "source": "PayPal"
+      },
+      {
+        "count": 219,
+        "source": "Expedia"
+      },
+      {
+        "count": 192,
+        "source": "Salesforce"
+      },
+      {
+        "count": 184,
+        "source": "Goldman Sachs"
+      },
+      {
+        "count": 154,
+        "source": "Databricks (greenhouse)"
+      }
+    ],
+    "jobs_last_24h": 50,
+    "last_seen": "2026-06-29T22:35:30+00:00",
+    "latest_jobs": [
+      {
+        "first_seen": "2026-06-29T17:43:30.404861-05:00",
+        "location": "Redmond, WA, US",
+        "notified_at": "2026-06-29T17:43:30.404861-05:00",
+        "posted_at": "2026-06-29T22:35:30+00:00",
+        "source": "Microsoft",
+        "title": "Senior Software Engineer",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556899616"
+      },
+      {
+        "first_seen": "2026-06-29T17:08:09.400110-05:00",
+        "location": "Remote: United States",
+        "notified_at": "2026-06-29T17:08:09.400110-05:00",
+        "posted_at": "2026-06-29T21:55:17.427000+00:00",
+        "source": "Render (ashby)",
+        "title": "Software Engineer, Compute Infrastructure",
+        "url": "https://jobs.ashbyhq.com/render/af5b6699-2e4a-47de-99f7-664baa738190"
+      },
+      {
+        "first_seen": "2026-06-29T16:47:52.704004-05:00",
+        "location": "Mountain View, CA, USA",
+        "notified_at": "2026-06-29T16:47:52.704004-05:00",
+        "posted_at": "2026-06-29T21:40:11.818000+00:00",
+        "source": "Google",
+        "title": "Software Engineer III, Recommendations, Rankings, Predictions, Discover Ranking",
+        "url": "https://www.google.com/about/careers/applications/signin?jobId=CiUAL2FckS6tBy3XlilXd8gV1au3NYeDWU0gNE5Fp8jQTyDLeXFUEjsA1Ny_izPmazwFinYnMrqmhbsUsIAXvSTruC6kTfdoSlW8-p3rvrdcpWgCIIo9TUGNDO9C8u8-fqd9Fw%3D%3D_V2&loc=US&title=Software+Engineer+III"
+      },
+      {
+        "first_seen": "2026-06-29T16:39:10.782629-05:00",
+        "location": "Redmond, WA, US; Mountain View, CA, US",
+        "notified_at": "2026-06-29T16:39:10.782629-05:00",
+        "posted_at": "2026-06-29T21:29:32+00:00",
+        "source": "Microsoft",
+        "title": "Senior Software Engineer",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556912069"
+      },
+      {
+        "first_seen": "2026-06-29T14:49:43.130480-05:00",
+        "location": "Redmond, WA, US; Mountain View, CA, US; New York, NY, US",
+        "notified_at": "2026-06-29T14:49:43.130480-05:00",
+        "posted_at": "2026-06-29T19:36:23+00:00",
+        "source": "Microsoft",
+        "title": "(Senior) Software Engineer, Experimentation Platform - CoreAI",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556915316"
+      },
+      {
+        "first_seen": "2026-06-29T14:49:43.130480-05:00",
+        "location": "Redmond, WA, US; Mountain View, CA, US; New York, NY, US",
+        "notified_at": "2026-06-29T14:49:43.130480-05:00",
+        "posted_at": "2026-06-29T19:35:25+00:00",
+        "source": "Microsoft",
+        "title": "Principal/Senior Software Engineer, Experimentation Platform - CoreAI",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556915319"
+      },
+      {
+        "first_seen": "2026-06-29T14:08:59.814880-05:00",
+        "location": "Reston, VA, US; Redmond, WA, US",
+        "notified_at": "2026-06-29T14:08:59.814880-05:00",
+        "posted_at": "2026-06-29T18:53:51+00:00",
+        "source": "Microsoft",
+        "title": "Software Engineer II - CTJ - Top Secret",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556917742"
+      },
+      {
+        "first_seen": "2026-06-29T18:18:17.330071-05:00",
+        "location": "3650 131st Ave SE, Bellevue, WA",
+        "notified_at": "2026-06-29T18:18:17.330071-05:00",
+        "posted_at": "2026-06-29T18:18:17.330071-05:00",
+        "source": "T-Mobile",
+        "title": "Software Engineer",
+        "url": "https://careers.t-mobile.com/software-engineer/job/D9D2C660D1B496319D3339998856849C"
+      },
+      {
+        "first_seen": "2026-06-29T18:18:17.330071-05:00",
+        "location": "3560 Dallas Pkwy, Frisco, TX",
+        "notified_at": "2026-06-29T18:18:17.330071-05:00",
+        "posted_at": "2026-06-29T18:18:17.330071-05:00",
+        "source": "T-Mobile",
+        "title": "Sr Software Engineer",
+        "url": "https://careers.t-mobile.com/sr-software-engineer/job/8265C3A92B935DD64675D08F286200DF"
+      },
+      {
+        "first_seen": "2026-06-29T12:41:01.978615-05:00",
+        "location": "Mountain View, CA, USA",
+        "notified_at": "2026-06-29T12:41:01.978615-05:00",
+        "posted_at": "2026-06-29T17:38:29.653000+00:00",
+        "source": "Google",
+        "title": "Software Engineer, Discover Recommendations and AI Feed",
+        "url": "https://www.google.com/about/careers/applications/signin?jobId=CiUAL2FckTYQ1mCkSq0pJMITm9X65wPIb-oxwtDzC943KHmWzoD8EjsA1Ny_i2nXJM43FFiKW1SOl3G7jT1ChaTDlIrTU5p0IPBLc9c_Hcsj6ea64WL-LE0kDmzNDc0XiCumcw%3D%3D_V2&loc=US&title=Software+Engineer"
+      },
+      {
+        "first_seen": "2026-06-29T12:41:01.978615-05:00",
+        "location": "Mountain View, CA, USA",
+        "notified_at": "2026-06-29T12:41:01.978615-05:00",
+        "posted_at": "2026-06-29T17:38:26.459000+00:00",
+        "source": "Google",
+        "title": "Senior Software Engineer, Discover Recommendations and AI Feed",
+        "url": "https://www.google.com/about/careers/applications/signin?jobId=CiUAL2FckZG0fAqBjZgOsUNjd-9cAb5hBV0kRbXvEYbt0pcoYZPyEjsA1Ny_i9QySJRhqlzOvzdg2JW_SHwQOLfyYAOzJz2Bkuw3_abY7ezRH4ah6iGy7fMsq_i0svXpgNK9Yw%3D%3D_V2&loc=US&title=Senior+Software+Engineer"
+      },
+      {
+        "first_seen": "2026-06-29T16:27:40.955883-05:00",
+        "location": "Seattle, United States of America",
+        "notified_at": "2026-06-29T16:27:40.955883-05:00",
+        "posted_at": "2026-06-29T16:27:40.955883-05:00",
+        "source": "Apple",
+        "title": "CV and ML Engineer",
+        "url": "https://jobs.apple.com/en-us/details/200670387/cv-and-ml-engineer"
+      },
+      {
+        "first_seen": "2026-06-29T11:30:35.667402-05:00",
+        "location": "Los Gatos,California,United States of America",
+        "notified_at": "2026-06-29T11:30:35.667402-05:00",
+        "posted_at": "2026-06-29T16:17:51+00:00",
+        "source": "Netflix",
+        "title": "Software Engineer 6 - Creative Studio",
+        "url": "https://explore.jobs.netflix.net/careers/job/790315757011"
+      },
+      {
+        "first_seen": "2026-06-29T11:26:47.516712-05:00",
+        "location": "Redmond, WA, US",
+        "notified_at": "2026-06-29T11:26:47.516712-05:00",
+        "posted_at": "2026-06-29T16:06:14+00:00",
+        "source": "Microsoft",
+        "title": "Senior Software Engineer",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556911584"
+      },
+      {
+        "first_seen": "2026-06-29T15:32:34.720542-05:00",
+        "location": "Join our team as a Senior Software Engineer and lead the design and delivery of next-generation chatbot and search systems. Collaborate with cross-functional teams, drive technical innovation, and mentor engineers while working with cutting-edge cloud and AI technologies. Shape the future of customer experiences at Chewy and grow your career with us.",
+        "notified_at": "2026-06-29T15:32:34.720542-05:00",
+        "posted_at": "2026-06-29T15:32:34.720542-05:00",
+        "source": "Chewy",
+        "title": "Software Engineer III",
+        "url": "https://careers.chewy.com/us/en/job/R29953/Software-Engineer-III"
+      },
+      {
+        "first_seen": "2026-06-29T15:22:45.443230-05:00",
+        "location": "Cupertino, United States of America",
+        "notified_at": "2026-06-29T15:22:45.443230-05:00",
+        "posted_at": "2026-06-29T15:22:45.443230-05:00",
+        "source": "Apple",
+        "title": "Software Development Engineer in Test - Battery Life",
+        "url": "https://jobs.apple.com/en-us/details/200670172/software-development-engineer-in-test-battery-life"
+      },
+      {
+        "first_seen": "2026-06-29T15:22:45.443230-05:00",
+        "location": "Pennington, New Jersey, United States",
+        "notified_at": "2026-06-29T15:22:45.443230-05:00",
+        "posted_at": "2026-06-29T15:22:45.443230-05:00",
+        "source": "Bank of America",
+        "title": "Vice President; Software Engineer",
+        "url": "https://careers.bankofamerica.com/en-us/job-detail/26022269/vice-president-software-engineer-pennington-new-jersey-united-states"
+      },
+      {
+        "first_seen": "2026-06-29T10:20:01.423613-05:00",
+        "location": "Sunnyvale, CA, USA",
+        "notified_at": "2026-06-29T10:20:01.423613-05:00",
+        "posted_at": "2026-06-29T15:10:30.272000+00:00",
+        "source": "Google",
+        "title": "Senior Software Engineer, Google Cloud Kubernetes Networking",
+        "url": "https://www.google.com/about/careers/applications/signin?jobId=CiUAL2FckXSoFWfHkZA_gS_-nIkakQw4191I2Dy3xUnVu0xBr54LEjsA1Ny_i7YUc6086mZBoKHlNo8j1nqg5nuSkOy3dHJDKhztxTcXRoV1gMFfX8fWUpDMr_O34yAs8Mek_A%3D%3D_V2&loc=US&title=Senior+Software+Engineer"
+      },
+      {
+        "first_seen": "2026-06-29T15:02:32.313627-05:00",
+        "location": "Cupertino, United States of America",
+        "notified_at": "2026-06-29T15:02:32.313627-05:00",
+        "posted_at": "2026-06-29T15:02:32.313627-05:00",
+        "source": "Apple",
+        "title": "Streaming Media Software Engineer",
+        "url": "https://jobs.apple.com/en-us/details/200668991/streaming-media-software-engineer"
+      },
+      {
+        "first_seen": "2026-06-29T15:02:32.313627-05:00",
+        "location": "San Diego, United States of America",
+        "notified_at": "2026-06-29T15:02:32.313627-05:00",
+        "posted_at": "2026-06-29T15:02:32.313627-05:00",
+        "source": "Apple",
+        "title": "Software Development Engineer in Test - Battery Life",
+        "url": "https://jobs.apple.com/en-us/details/200669646/software-development-engineer-in-test-battery-life"
+      },
+      {
+        "first_seen": "2026-06-29T14:21:55.692590-05:00",
+        "location": "Sunnyvale, United States of America",
+        "notified_at": "2026-06-29T14:21:55.692590-05:00",
+        "posted_at": "2026-06-29T14:21:55.692590-05:00",
+        "source": "Apple",
+        "title": "Sr. AR/VR Realtime Rendering and Graphics Software Engineer - RealityKit, Vision Products Software",
+        "url": "https://jobs.apple.com/en-us/details/200670225/sr-ar-vr-realtime-rendering-and-graphics-software-engineer-realitykit-vision-products-software"
+      },
+      {
+        "first_seen": "2026-06-29T13:21:22.298756-05:00",
+        "location": "Charlotte, North Carolina, United States",
+        "notified_at": "2026-06-29T13:21:22.298756-05:00",
+        "posted_at": "2026-06-29T13:21:22.298756-05:00",
+        "source": "Bank of America",
+        "title": "Principal Engineer - Agentic AI Platform Engineering & Performance",
+        "url": "https://careers.bankofamerica.com/en-us/job-detail/26020194/principal-engineer-agentic-ai-platform-engineering-performance-charlotte-north-carolina-united-states"
+      },
+      {
+        "first_seen": "2026-06-29T13:21:22.298756-05:00",
+        "location": "Newark, Delaware, United States",
+        "notified_at": "2026-06-29T13:21:22.298756-05:00",
+        "posted_at": "2026-06-29T13:21:22.298756-05:00",
+        "source": "Bank of America",
+        "title": "Assistant Vice President; Software Engineer",
+        "url": "https://careers.bankofamerica.com/en-us/job-detail/26022220/assistant-vice-president-software-engineer-newark-delaware-united-states"
+      },
+      {
+        "first_seen": "2026-06-29T13:21:22.298756-05:00",
+        "location": "Charlotte, North Carolina, United States",
+        "notified_at": "2026-06-29T13:21:22.298756-05:00",
+        "posted_at": "2026-06-29T13:21:22.298756-05:00",
+        "source": "Bank of America",
+        "title": "Principal Engineer - Agentic AI Engineering",
+        "url": "https://careers.bankofamerica.com/en-us/job-detail/26021653/principal-engineer-agentic-ai-engineering-charlotte-north-carolina-united-states"
+      },
+      {
+        "first_seen": "2026-06-29T13:21:22.298756-05:00",
+        "location": "Charlotte, North Carolina, United States",
+        "notified_at": "2026-06-29T13:21:22.298756-05:00",
+        "posted_at": "2026-06-29T13:21:22.298756-05:00",
+        "source": "Bank of America",
+        "title": "Principal Engineer - Agentic AI Engineering",
+        "url": "https://careers.bankofamerica.com/en-us/job-detail/26020201/principal-engineer-agentic-ai-engineering-charlotte-north-carolina-united-states"
+      },
+      {
+        "first_seen": "2026-06-29T12:45:22.999776-05:00",
+        "location": "Work from Home, United States",
+        "notified_at": "2026-06-29T12:45:22.999776-05:00",
+        "posted_at": "2026-06-29T12:45:22.999776-05:00",
+        "source": "FICO",
+        "title": "Software Engineering Intern",
+        "url": "https://fico.wd1.myworkdayjobs.com/job/Work-from-Home-United-States/Software-Engineering-Intern_32067"
+      },
+      {
+        "first_seen": "2026-06-29T08:45:00.489716-05:00",
+        "location": "Mountain View, CA, USA",
+        "notified_at": "2026-06-29T08:45:00.489716-05:00",
+        "posted_at": "2026-06-29T12:38:22.682000+00:00",
+        "source": "Google",
+        "title": "Senior Software Engineer, AI Core Capabilities",
+        "url": "https://www.google.com/about/careers/applications/signin?jobId=CiUAL2Fckdp9NB2aer5iWeL38C-B6GTDsEwVclVwAg02-AoRTAiJEjsA1Ny_i5KE8dLVEsMTwybsP2tdfAy_iEbGfphJaZLpGXo8_GCm0MivkCxo7DnD_kqeW84nl33JMKT99g%3D%3D_V2&loc=US&title=Senior+Software+Engineer"
+      },
+      {
+        "first_seen": "2026-06-29T12:20:59.520354-05:00",
+        "location": "Austin, United States of America",
+        "notified_at": "2026-06-29T12:20:59.520354-05:00",
+        "posted_at": "2026-06-29T12:20:59.520354-05:00",
+        "source": "Apple",
+        "title": "Senior Software Engineer, Wallet Identity Server",
+        "url": "https://jobs.apple.com/en-us/details/200660056/senior-software-engineer-wallet-identity-server"
+      },
+      {
+        "first_seen": "2026-06-29T08:45:00.489716-05:00",
+        "location": "Sunnyvale, CA, USA",
+        "notified_at": "2026-06-29T08:45:00.489716-05:00",
+        "posted_at": "2026-06-29T12:07:22.352000+00:00",
+        "source": "Google",
+        "title": "Software Engineer III, Infrastructure, Google Cloud Compute Infrastructure",
+        "url": "https://www.google.com/about/careers/applications/signin?jobId=CiUAL2FckVbEL0rvlSHzxfKzBS4zq4fZr0Ai5EyqfIpLyJgi33KbEjsA1Ny_i3xY1lm5KgeOUEeXLX11bQcKy-u5nHe7k1jYM9UE6q3VK6DySH_W5EEfWR6onX2tz-JdxvoZDw%3D%3D_V2&loc=US&title=Software+Engineer+III"
+      },
+      {
+        "first_seen": "2026-06-29T08:45:00.489716-05:00",
+        "location": "Mountain View, CA, USA",
+        "notified_at": "2026-06-29T08:45:00.489716-05:00",
+        "posted_at": "2026-06-29T12:07:19.995000+00:00",
+        "source": "Google",
+        "title": "Senior Software Engineer, Sensor AI/ML, Watch Software",
+        "url": "https://www.google.com/about/careers/applications/signin?jobId=CiUAL2FckZPETLrayK-ovk1Ev5Sq58APkCQuuk34K_HS_WSrWPeCEjsA1Ny_i2GGwE809Pa7Uo4e3Yc58VhkO7fBYPqJzFKZNROI9x_VekhuE8yCi4r07VEhuXkNA5bdrnopgw%3D%3D_V2&loc=US&title=Senior+Software+Engineer"
+      },
+      {
+        "first_seen": "2026-06-29T08:45:00.489716-05:00",
+        "location": "Kirkland, WA, USA",
+        "notified_at": "2026-06-29T08:45:00.489716-05:00",
+        "posted_at": "2026-06-29T12:07:18.184000+00:00",
+        "source": "Google",
+        "title": "Senior Software Engineer, Infrastructure, Google Cloud Memorystore",
+        "url": "https://www.google.com/about/careers/applications/signin?jobId=CiUAL2FckdXE-DEMPwZ3mIndBi3EZlVrVWg4d-6g8Yuwvy9GqvnwEjsA1Ny_i7mRx1iJwrAkoixhyvKpdAXZWYqs6qiSPkYwLlM2ovf_RxN5MhoMNAZd74UJfAydFva7JrJiTA%3D%3D_V2&loc=US&title=Senior+Software+Engineer"
+      },
+      {
+        "first_seen": "2026-06-29T12:00:50.854639-05:00",
+        "location": "Cupertino, United States of America",
+        "notified_at": "2026-06-29T12:00:50.854639-05:00",
+        "posted_at": "2026-06-29T12:00:50.854639-05:00",
+        "source": "Apple",
+        "title": "Software Engineer, System Experience",
+        "url": "https://jobs.apple.com/en-us/details/200607406/software-engineer-system-experience"
+      },
+      {
+        "first_seen": "2026-06-29T12:00:50.854639-05:00",
+        "location": "3650 131st Ave SE, Bellevue, WA",
+        "notified_at": "2026-06-29T12:00:50.854639-05:00",
+        "posted_at": "2026-06-29T12:00:50.854639-05:00",
+        "source": "T-Mobile",
+        "title": "Software Engineer",
+        "url": "https://careers.t-mobile.com/software-engineer/job/CF527408BECC10E063BE56B136979872"
+      },
+      {
+        "first_seen": "2026-06-29T11:20:20.903144-05:00",
+        "location": "Pennington, New Jersey, United States",
+        "notified_at": "2026-06-29T11:20:20.903144-05:00",
+        "posted_at": "2026-06-29T11:20:20.903144-05:00",
+        "source": "Bank of America",
+        "title": "Software Engineer III-IIDR - IBM InfoSphere Data Replication",
+        "url": "https://careers.bankofamerica.com/en-us/job-detail/26022022/software-engineer-iii-iidr-ibm-infosphere-data-replication-multiple-locations"
+      },
+      {
+        "first_seen": "2026-06-29T02:39:25.385194-05:00",
+        "location": "Kirkland, WA, USA",
+        "notified_at": "2026-06-29T02:39:25.385194-05:00",
+        "posted_at": "2026-06-29T08:39:27.302000+00:00",
+        "source": "Google",
+        "title": "Software Engineer III, Generative AI",
+        "url": "https://www.google.com/about/careers/applications/signin?jobId=CiUAL2Fcka3zQI5sBB06lhPHzb87_dJAoNCWQgzEAUTopZpXH0SBEjsA1Ny_i68ADNTzLlV1UXFfBl9KabD78R9EjW0uJHEFIGfAw-2r4c1p87LRmoArDg1a3xZh6VKocqPWNA%3D%3D_V2&loc=US&title=Software+Engineer+III"
+      },
+      {
+        "first_seen": "2026-06-29T02:39:25.385194-05:00",
+        "location": "Bellevue, Washington, United StatesCategory : EngineeringreqId: ASHREQ-5661Description Teaser: Join our team as a Senior Software Engineer (AI Engineer) and help redefine the future of developer productivity at Snowflake. Leverage your expertise in AI tools, distributed systems, and modern programming languages to build scalable solutions. Collaborate with industry experts and drive innovation in a high-impact, high-visibility role.Join our team as a Senior Software Engineer (AI Engineer) and help redefine the future of developer productivity at Snowflake. Leverage your expertise in AI tools, distributed systems, and modern programming languages to build scalable solutions. Collaborate with industry experts and drive innovation in a high-impact, high-visibility role.",
+        "notified_at": "2026-06-29T02:39:25.385194-05:00",
+        "posted_at": "2026-06-29T02:39:25.385194-05:00",
+        "source": "Snowflake",
+        "title": "Senior Software Engineer (AI Engineer - IC 2/3)",
+        "url": "https://careers.snowflake.com/us/en/job/SNCOUS77463E6E07EE46DCBAC20D8510AB9964EXTERNALENUSBED7FA9DF8A44C7FAD1A59883A43B6FE/Senior-Software-Engineer-AI-Engineer-IC-2-3"
+      },
+      {
+        "first_seen": "2026-06-29T01:35:20.469130-05:00",
+        "location": "Remote",
+        "notified_at": "2026-06-29T01:35:20.469130-05:00",
+        "posted_at": "2026-06-29T01:35:20.469130-05:00",
+        "source": "Cisco",
+        "title": "Software Engineer",
+        "url": "https://careers.cisco.com/global/en/job/2016513/Software-Engineer"
+      },
+      {
+        "first_seen": "2026-06-29T08:45:00.489716-05:00",
+        "location": "US, CA, Santa Clara",
+        "notified_at": "2026-06-29T08:45:00.489716-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "Amazon",
+        "title": "Software Development Engineer II, AWS AI & Strategic Partner Engineering",
+        "url": "https://www.amazon.jobs/en/jobs/10460886/software-development-engineer-ii-aws-ai-strategic-partner-engineering"
+      },
+      {
+        "first_seen": "2026-06-29T08:45:00.489716-05:00",
+        "location": "China, Shanghai; Remote - China",
+        "notified_at": "2026-06-29T08:45:00.489716-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "NVIDIA",
+        "title": "Deep Learning Compiler CI/Infrastructure Engineer",
+        "url": "https://jobs.nvidia.com/careers/job/893395999542?domain=nvidia.com"
+      },
+      {
+        "first_seen": "2026-06-29T08:45:00.489716-05:00",
+        "location": "New York, New York, United States of America",
+        "notified_at": "2026-06-29T08:45:00.489716-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "Morgan Stanley",
+        "title": "Vice President, Software Engineer",
+        "url": "https://morganstanley.eightfold.ai/careers/job/549785625481?domain=morganstanley.com&source=mscom"
+      },
+      {
+        "first_seen": "2026-06-29T09:59:51.270750-05:00",
+        "location": "US, CA, San Diego",
+        "notified_at": "2026-06-29T09:59:51.270750-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "Amazon",
+        "title": "Embedded Software Engineer, Amazon Leo Digital RF Systems",
+        "url": "https://www.amazon.jobs/en/jobs/10460940/embedded-software-engineer-amazon-leo-digital-rf-systems"
+      },
+      {
+        "first_seen": "2026-06-29T11:00:20.795797-05:00",
+        "location": "US, NJ, Newark",
+        "notified_at": "2026-06-29T11:00:20.795797-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "Amazon",
+        "title": "Software Development Engineer",
+        "url": "https://www.amazon.jobs/en/jobs/10461191/software-development-engineer"
+      },
+      {
+        "first_seen": "2026-06-29T12:00:50.854639-05:00",
+        "location": "US, CA, Culver City",
+        "notified_at": "2026-06-29T12:00:50.854639-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "Amazon",
+        "title": "Software Development Engineer, Amazon Music",
+        "url": "https://www.amazon.jobs/en/jobs/10461326/software-development-engineer-amazon-music"
+      },
+      {
+        "first_seen": "2026-06-29T12:31:04.453573-05:00",
+        "location": "US, CA, Sunnyvale",
+        "notified_at": "2026-06-29T12:31:04.453573-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "Amazon",
+        "title": "Software Development Engineer, Catalog Diagnostics (Agentic) & Analytics",
+        "url": "https://www.amazon.jobs/en/jobs/10461352/software-development-engineer-catalog-diagnostics-agentic-analytics"
+      },
+      {
+        "first_seen": "2026-06-29T12:31:04.453573-05:00",
+        "location": "US, VA, Arlington",
+        "notified_at": "2026-06-29T12:31:04.453573-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "Amazon",
+        "title": "Software Development Engineer - AWS Invoicing, AWS Invoice Computation",
+        "url": "https://www.amazon.jobs/en/jobs/10461393/software-development-engineer-aws-invoicing-aws-invoice-computation"
+      },
+      {
+        "first_seen": "2026-06-29T13:01:21.581191-05:00",
+        "location": "New York, New York, United States of America",
+        "notified_at": "2026-06-29T13:01:21.581191-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "Morgan Stanley",
+        "title": "Senior Software Engineer (AI/ML) - Vice President",
+        "url": "https://morganstanley.eightfold.ai/careers/job/549798559787?domain=morganstanley.com&source=mscom"
+      },
+      {
+        "first_seen": "2026-06-29T13:01:21.581191-05:00",
+        "location": "New York, New York, United States of America",
+        "notified_at": "2026-06-29T13:01:21.581191-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "Morgan Stanley",
+        "title": "Associate, Software Engineer",
+        "url": "https://morganstanley.eightfold.ai/careers/job/549794924208?domain=morganstanley.com&source=mscom"
+      },
+      {
+        "first_seen": "2026-06-29T14:01:42.859852-05:00",
+        "location": "US, CA, Sunnyvale",
+        "notified_at": "2026-06-29T14:01:42.859852-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "Amazon",
+        "title": "Software Development Engineer, Kuiper Manufacturing Systems Engineering",
+        "url": "https://www.amazon.jobs/en/jobs/10461494/software-development-engineer-kuiper-manufacturing-systems-engineering"
+      },
+      {
+        "first_seen": "2026-06-29T14:01:42.859852-05:00",
+        "location": "US, CA, Sunnyvale",
+        "notified_at": "2026-06-29T14:01:42.859852-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "Amazon",
+        "title": "Software Development Engineer, Kuiper Manufacturing Systems Engineering",
+        "url": "https://www.amazon.jobs/en/jobs/10461493/software-development-engineer-kuiper-manufacturing-systems-engineering"
+      },
+      {
+        "first_seen": "2026-06-29T14:01:42.859852-05:00",
+        "location": "US, CA, Santa Clara",
+        "notified_at": "2026-06-29T14:01:42.859852-05:00",
+        "posted_at": "2026-06-29T00:00:00+00:00",
+        "source": "NVIDIA",
+        "title": "System Software Engineer - Performance Lab",
+        "url": "https://jobs.nvidia.com/careers/job/893396007573?domain=nvidia.com"
+      }
+    ],
+    "total_jobs": 8952,
+    "unnotified": 1361
+  }
+}

@@ -15,6 +15,12 @@
           <p class="hero-subtitle">
             Live snapshots of your sources, matches, and delivery health.
           </p>
+          {% if public_snapshot %}
+            <p class="snapshot-note">
+              Public demo snapshot generated {{ snapshot_generated_at or "recently" }}.
+              The private scheduler still runs locally.
+            </p>
+          {% endif %}
         </div>
         <div class="hero-right">
           <button class="theme-toggle" id="theme-toggle" type="button">Toggle theme</button>
