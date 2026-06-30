@@ -6,3 +6,4 @@ job_monitor.db
 logs/
 .env
 .DS_Store
+.vercel
