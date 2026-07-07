@@ -9,10 +9,13 @@ from job_monitor.db import (
     count_due_pending_notifications,
     get_pending_notifications,
     init_db,
+    insert_job,
     mark_notification_failed,
+    mark_notification_pending,
     mark_notified,
     recover_recent_unnotified_notifications,
 )
+from job_monitor.models import Job
 from job_monitor.notify import OutboundEmail, send_email_batch
 
 
@@ -50,16 +53,104 @@ class NotificationQueueTests(unittest.TestCase):
             mark_notified(conn, ["stranded"], notified_at=now + timedelta(minutes=11))
             self.assertEqual(count_due_pending_notifications(conn, now=now + timedelta(hours=1)), 0)
 
-    def _insert_row(self, conn: sqlite3.Connection, job_id: str, *, notified_at, first_seen):
+    def test_recovery_suppresses_stale_source_posted_jobs(self):
+        tz = ZoneInfo("America/Chicago")
+        now = datetime(2026, 7, 7, 9, 30, tzinfo=tz)
+        last_success = now - timedelta(minutes=20)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            db_path = str(Path(tmp) / "jobs.db")
+            conn = init_db(db_path)
+            self._insert_row(conn, "sent", notified_at=last_success, first_seen=last_success)
+            self._insert_row(
+                conn,
+                "fresh",
+                source="SimplyHired",
+                notified_at=None,
+                first_seen=now - timedelta(minutes=5),
+                posted_at=now - timedelta(hours=2),
+            )
+            self._insert_row(
+                conn,
+                "stale",
+                source="SimplyHired",
+                notified_at=None,
+                first_seen=now - timedelta(minutes=5),
+                posted_at=now - timedelta(days=30),
+            )
+
+            recovered = recover_recent_unnotified_notifications(
+                conn,
+                now=now,
+                lookback_hours=48,
+                source_notify_policies={
+                    "SimplyHired": {
+                        "notify_recent_hours": 72,
+                        "notify_require_posted_at": True,
+                    }
+                },
+            )
+
+            self.assertEqual(recovered, 1)
+            pending = get_pending_notifications(conn, now=now, limit=10)
+            self.assertEqual([job.job_id for job in pending], ["fresh"])
+
+            stale_row = conn.execute("SELECT notified_at, notify_pending FROM jobs WHERE job_id = 'stale'").fetchone()
+            self.assertIsNotNone(stale_row[0])
+            self.assertEqual(stale_row[1], 0)
+
+    def test_pending_notifications_preserve_posted_display_metadata(self):
+        tz = ZoneInfo("America/Chicago")
+        now = datetime(2026, 7, 7, 9, 30, tzinfo=tz)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            db_path = str(Path(tmp) / "jobs.db")
+            conn = init_db(db_path)
+            insert_job(
+                conn,
+                Job(
+                    job_id="seen-job",
+                    source="TestCo",
+                    title="Software Engineer",
+                    location="Remote",
+                    url="https://example.com/seen-job",
+                    posted_at=now,
+                    raw={
+                        "posted_at_display_label": "seen",
+                        "posted_at_display_date_only": False,
+                        "posted_at_fallback": True,
+                    },
+                ),
+                first_seen=now,
+            )
+            mark_notification_pending(conn, ["seen-job"])
+
+            [pending] = get_pending_notifications(conn, now=now, limit=10)
+            self.assertEqual(pending.raw["posted_at_display_label"], "seen")
+            self.assertFalse(pending.raw["posted_at_display_date_only"])
+            self.assertTrue(pending.raw["posted_at_fallback"])
+
+    def _insert_row(
+        self,
+        conn: sqlite3.Connection,
+        job_id: str,
+        *,
+        notified_at,
+        first_seen,
+        source="TestCo",
+        posted_at=None,
+    ):
+        posted_at = posted_at or first_seen
         conn.execute(
             """
             INSERT INTO jobs (job_id, source, url, title, location, posted_at, first_seen, notified_at)
-            VALUES (?, 'TestCo', ?, 'Software Engineer', 'United States', ?, ?, ?)
+            VALUES (?, ?, ?, 'Software Engineer', 'United States', ?, ?, ?)
             """,
             (
                 job_id,
+                source,
                 f"https://example.com/{job_id}",
-                first_seen.isoformat(),
+                posted_at.isoformat(),
                 first_seen.isoformat(),
                 notified_at.isoformat() if notified_at else None,
             ),

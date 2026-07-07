@@ -1,6 +1,6 @@
 import sqlite3
 from datetime import datetime, timedelta
-from typing import Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional
 
 from .models import Job
 
@@ -17,7 +17,10 @@ def init_db(db_path: str) -> sqlite3.Connection:
             location TEXT,
             posted_at TEXT,
             first_seen TEXT,
-            notified_at TEXT
+            notified_at TEXT,
+            posted_at_display_label TEXT,
+            posted_at_display_date_only INTEGER NOT NULL DEFAULT 0,
+            posted_at_fallback INTEGER NOT NULL DEFAULT 0
         )
         """
     )
@@ -26,6 +29,9 @@ def init_db(db_path: str) -> sqlite3.Connection:
     _ensure_column(conn, "notification_attempts", "INTEGER NOT NULL DEFAULT 0")
     _ensure_column(conn, "last_notify_error", "TEXT")
     _ensure_column(conn, "next_notify_at", "TEXT")
+    _ensure_column(conn, "posted_at_display_label", "TEXT")
+    _ensure_column(conn, "posted_at_display_date_only", "INTEGER NOT NULL DEFAULT 0")
+    _ensure_column(conn, "posted_at_fallback", "INTEGER NOT NULL DEFAULT 0")
     conn.execute(
         """
         CREATE INDEX IF NOT EXISTS idx_jobs_pending_notifications
@@ -53,11 +59,24 @@ def has_jobs_for_source(conn: sqlite3.Connection, source: str) -> bool:
 
 
 def insert_job(conn: sqlite3.Connection, job: Job, *, first_seen: datetime) -> None:
+    raw = job.raw if isinstance(job.raw, dict) else {}
     conn.execute(
         """
         INSERT OR IGNORE INTO jobs
-        (job_id, source, url, title, location, posted_at, first_seen, notified_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, NULL)
+        (
+            job_id,
+            source,
+            url,
+            title,
+            location,
+            posted_at,
+            first_seen,
+            notified_at,
+            posted_at_display_label,
+            posted_at_display_date_only,
+            posted_at_fallback
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)
         """,
         (
             job.job_id,
@@ -67,6 +86,9 @@ def insert_job(conn: sqlite3.Connection, job: Job, *, first_seen: datetime) -> N
             job.location,
             job.posted_at.isoformat() if job.posted_at else None,
             first_seen.isoformat(),
+            str(raw.get("posted_at_display_label") or ""),
+            1 if raw.get("posted_at_display_date_only") else 0,
+            1 if raw.get("posted_at_fallback") else 0,
         ),
     )
     conn.commit()
@@ -129,7 +151,17 @@ def get_pending_notifications(
 ) -> List[Job]:
     rows = conn.execute(
         """
-        SELECT job_id, source, title, location, url, posted_at, notification_attempts
+        SELECT
+            job_id,
+            source,
+            title,
+            location,
+            url,
+            posted_at,
+            notification_attempts,
+            posted_at_display_label,
+            posted_at_display_date_only,
+            posted_at_fallback
         FROM jobs
         WHERE notify_pending = 1
           AND notified_at IS NULL
@@ -161,6 +193,7 @@ def recover_recent_unnotified_notifications(
     *,
     now: datetime,
     lookback_hours: int,
+    source_notify_policies: Optional[Dict[str, dict]] = None,
 ) -> int:
     """Queue recent unnotified jobs that were discovered after the last success.
 
@@ -175,13 +208,37 @@ def recover_recent_unnotified_notifications(
     cutoff = max(last_success, now - timedelta(hours=max(1, int(lookback_hours))))
     rows = conn.execute(
         """
-        SELECT job_id, first_seen
+        SELECT
+            job_id,
+            source,
+            posted_at,
+            first_seen,
+            posted_at_fallback
         FROM jobs
         WHERE notified_at IS NULL
           AND notify_pending = 0
         """
     ).fetchall()
-    job_ids = [job_id for job_id, first_seen in rows if _is_at_or_after(first_seen, cutoff, now)]
+    job_ids = []
+    suppressed_ids = []
+    for job_id, source, posted_at, first_seen, posted_at_fallback in rows:
+        if not _is_after(first_seen, cutoff, now):
+            continue
+
+        if _passes_source_notify_policy(
+            source=source,
+            posted_at=posted_at,
+            posted_at_fallback=bool(posted_at_fallback),
+            now=now,
+            source_notify_policies=source_notify_policies or {},
+        ):
+            job_ids.append(job_id)
+        else:
+            suppressed_ids.append(job_id)
+
+    if suppressed_ids:
+        mark_notified(conn, suppressed_ids, notified_at=now)
+
     if not job_ids:
         return 0
 
@@ -190,7 +247,18 @@ def recover_recent_unnotified_notifications(
 
 
 def _job_from_row(row) -> Job:
-    job_id, source, title, location, url, posted_at, attempts = row
+    (
+        job_id,
+        source,
+        title,
+        location,
+        url,
+        posted_at,
+        attempts,
+        posted_at_display_label,
+        posted_at_display_date_only,
+        posted_at_fallback,
+    ) = row
     return Job(
         job_id=job_id,
         source=source,
@@ -198,7 +266,12 @@ def _job_from_row(row) -> Job:
         location=location or "",
         url=url,
         posted_at=_parse_datetime(posted_at),
-        raw={"notification_attempts": attempts or 0},
+        raw={
+            "notification_attempts": attempts or 0,
+            "posted_at_display_label": posted_at_display_label or "",
+            "posted_at_display_date_only": bool(posted_at_display_date_only),
+            "posted_at_fallback": bool(posted_at_fallback),
+        },
     )
 
 
@@ -211,12 +284,42 @@ def _parse_datetime(value: Optional[str]) -> Optional[datetime]:
         return None
 
 
-def _is_at_or_after(value: Optional[str], cutoff: datetime, now: datetime) -> bool:
+def _is_after(value: Optional[str], cutoff: datetime, now: datetime) -> bool:
     parsed = _parse_datetime(value)
     if not parsed:
         return False
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=now.tzinfo)
+    if cutoff.tzinfo is None:
+        cutoff = cutoff.replace(tzinfo=now.tzinfo)
+    return parsed > cutoff
+
+
+def _passes_source_notify_policy(
+    *,
+    source: str,
+    posted_at: Optional[str],
+    posted_at_fallback: bool,
+    now: datetime,
+    source_notify_policies: Dict[str, dict],
+) -> bool:
+    policy = source_notify_policies.get(source) or {}
+    notify_recent_hours = int(policy.get("notify_recent_hours") or 0)
+    notify_require_posted_at = bool(policy.get("notify_require_posted_at", True))
+
+    if posted_at_fallback and notify_require_posted_at:
+        return False
+
+    parsed = _parse_datetime(posted_at)
+    if not parsed:
+        return not notify_require_posted_at
+
+    if not notify_recent_hours:
+        return True
+
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=now.tzinfo)
+    cutoff = now - timedelta(hours=notify_recent_hours)
     if cutoff.tzinfo is None:
         cutoff = cutoff.replace(tzinfo=now.tzinfo)
     return parsed >= cutoff

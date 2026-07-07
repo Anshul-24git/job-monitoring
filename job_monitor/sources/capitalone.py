@@ -9,7 +9,10 @@ from ..models import Job
 from ..utils import ensure_absolute_url, hash_job_id, normalize_text, parse_date
 
 
-SOFTWARE_ENGINEER_PATTERN = re.compile(r"\bsoftware engineer\b", re.I)
+ENGINEERING_ROLE_PATTERN = re.compile(
+    r"\b(software engineer|ai engineer|ai software engineer)\b",
+    re.I,
+)
 SOFTWARE_ENGINEER_EXCLUDE_PATTERN = re.compile(
     r"\b(lead|manager|director|principal|distinguished|architect|head|vice president|vp)\b",
     re.I,
@@ -25,7 +28,7 @@ def _is_target_capitalone_role(title: str) -> bool:
     if PRODUCT_MANAGER_PATTERN.search(title_normalized):
         return True
 
-    if not SOFTWARE_ENGINEER_PATTERN.search(title_normalized):
+    if not ENGINEERING_ROLE_PATTERN.search(title_normalized):
         return False
 
     return not SOFTWARE_ENGINEER_EXCLUDE_PATTERN.search(title_normalized)

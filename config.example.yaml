@@ -7,422 +7,538 @@ email:
   app_password_env: JOB_MONITOR_GMAIL_APP_PASSWORD
   notify_on_errors: true
   error_email_cooldown_minutes: 60
-
 notifications:
   skip_first_run: true
   seed_recent_hours: 24
   seed_require_posted_at: true
   ignore_error_statuses:
-    - 404
-    - 410
-
+  - 404
+  - 410
 schedule:
   timezone: America/Chicago
   active_hours:
-    start: "00:00"
-    end: "23:59"
+    start: 00:00
+    end: '23:59'
   default_interval_minutes: 20
   sleep_seconds: 20
-
 env_file: .env
 auto_sources_file: auto_sources.yaml
-
 filters:
   include_keywords:
-    - sde
-    - software engineer
-    - senior software engineer
-    - sr software engineer
-    - sr. software engineer
-    - seniorsoftware engineer
-    - software engineering
-    - software developer
-    - software development engineer
-    - backend engineer
-    - back-end engineer
-    - full-stack engineer
-    - full stack engineer
-    - full-stack software developer
-    - full stack software developer
-    - frontend engineer
-    - front-end engineer
-    - platform engineer
-    - infrastructure engineer
-    - systems engineer
-    - machine learning engineer
-    - ml engineer
-    - ai engineer
-    - ai software engineer
-    - forward deployed engineer
-    - forward deployed ai engineer
-    - ai forward deployed engineer
-    - applied scientist
+  - sde
+  - software engineer
+  - senior software engineer
+  - sr software engineer
+  - sr. software engineer
+  - seniorsoftware engineer
+  - software engineering
+  - software developer
+  - software development engineer
+  - backend engineer
+  - back-end engineer
+  - full-stack engineer
+  - full stack engineer
+  - full-stack software developer
+  - full stack software developer
+  - frontend engineer
+  - front-end engineer
+  - platform engineer
+  - infrastructure engineer
+  - systems engineer
+  - machine learning engineer
+  - ml engineer
+  - ai engineer
+  - ai software engineer
+  - forward deployed engineer
+  - forward deployed ai engineer
+  - ai forward deployed engineer
+  - applied scientist
   exclude_keywords:
-    - sales
-    - support engineer
-    - sre
-    - site reliability
-    - devops
-    - dev ops
-    - mobile
-    - android
-    - ios
-    - data engineer
-    - data engineering
-    - staff software engineer
-    - principal software engineer
-    - machine learning engineer
-    - staff machine learning engineer
-    - software engineer manager
-    - software engineering manager
-    - staff
-    - sr director
-    - sr. director
-    - senior director
+  - sales
+  - support engineer
+  - sre
+  - site reliability
+  - devops
+  - dev ops
+  - mobile
+  - android
+  - ios
+  - data engineer
+  - data engineering
+  - staff software engineer
+  - principal software engineer
+  - machine learning engineer
+  - staff machine learning engineer
+  - software engineer manager
+  - software engineering manager
+  - staff
+  - sr director
+  - sr. director
+  - senior director
+  - principal software developer
+  - principle software engineer
+  - principle software developer
   location:
     us_only: true
     allow_remote_without_us_signal: false
-
 sources:
-  - name: Apple
-    url: https://jobs.apple.com/en-us/search?location=united-states-USA
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Microsoft
-    url: https://apply.careers.microsoft.com/careers?query=software+engineer&start=0&location=united+states&pid=1970393556621801&sort_by=timestamp&filter_include_remote=1
-    interval_minutes: 10
-    assume_us_only: true
-  - name: Amazon
-    url: https://www.amazon.jobs/en/search?offset=0&result_limit=25&sort=recent&country%5B%5D=USA&distanceType=Mi&radius=24km&latitude=&longitude=&loc_group_id=&loc_query=&base_query=software%20engineer&city=&country=&region=&county=&query_options=&
-    kind: amazon
-    interval_minutes: 30
-    assume_us_only: true
-    amazon_max_posted_age_days: 7
-    seed_recent_hours: 0
-  - name: FICO
-    url: https://fico.wd1.myworkdayjobs.com/en-US/External?locations=a46e175d937b106cf81d31f8ea94fa25&locations=680ba5c8ca2501b19fadb2b46601c73d
-    kind: workday
-    interval_minutes: 120
-    assume_us_only: true
-    workday_limit: 20
-    seed_recent_hours: 0
-  - name: Capital One
-    url: https://www.capitalonecareers.com/search-jobs/United%20States/234/2/6252001/39x76/-98x5/50/2
-    kind: capitalone
-    interval_minutes: 120
-    assume_us_only: true
-    include_keywords:
-      - product management
-      - product manager
-    seed_recent_hours: 0
-  - name: Goldman
-    display_name: Goldman Sachs
-    url: https://higher.gs.com/results?LOCATION=Albany|New%20York|Atlanta|Baltimore|Boston|Chicago|Dallas|Houston|Irving|Richardson|Denver|Detroit|Troy|Draper|Salt%20Lake%20City|Jersey%20City|Morristown|Menlo%20Park|Newport%20Beach|San%20Francisco|Miami|West%20Palm%20Beach|Norwalk|Philadelphia|Pittsburgh|Seattle|Washington|Wilmington&page=1&sort=POSTED_DATE
-    kind: highergs
-    interval_minutes: 10
-    assume_us_only: true
-    seed_recent_hours: 0
-  - name: Salesforce
-    url: https://careers.salesforce.com/en/jobs/?search=&country=United+States+of+America&pagesize=20#results
-    kind: salesforce
-    interval_minutes: 20
-    assume_us_only: true
-    include_keywords:
-      - software engineer
-      - ai software engineer
-      - forward deployed engineer
-      - forward deployed ai engineer
-      - ai forward deployed engineer
-    seed_recent_hours: 0
-  - name: Bank of America
-    url: https://careers.bankofamerica.com/en-us/job-search?ref=search&search=jobsByLocation&rows=25&start=0&keywords=software+engineer&sort=newest&searchstring=United+States
-    kind: bankofamerica
-    interval_minutes: 20
-    assume_us_only: true
-    timeout_seconds: 45
-    request_retries: 4
-    request_backoff_seconds: 1.5
-    seed_recent_hours: 0
-  - name: Intuit
-    url: https://jobs.intuit.com/search-jobs/
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    seed_recent_hours: 0
-    exclude_keywords:
-      - manager
-    playwright_link_patterns:
-      - /job/
-  - name: PayPal
-    url: https://paypal.eightfold.ai/careers?domain=paypal.com&customredirect=1&start=0&location=United+States&sort_by=timestamp&filter_include_remote=1&query=Software+Engineer
-    kind: eightfold
-    interval_minutes: 20
-    assume_us_only: true
-    seed_recent_hours: 0
-    notify_recent_hours: 72
-  - name: NVIDIA
-    url: https://jobs.nvidia.com/careers?query=Software+engineer&start=0&sort_by=timestamp&domain=nvidia.com
-    kind: eightfold
-    interval_minutes: 20
-    assume_us_only: true
-    seed_recent_hours: 0
-  - name: American Express
-    url: https://aexp.eightfold.ai/careers?query=Software%20Engineer&location=United%20States&domain=aexp.com&sort_by=relevance&hl=en&triggerGoButton=false
-    kind: generic
-    interval_minutes: 20
-    assume_us_only: true
-    seed_recent_hours: 0
-  - name: ServiceNow
-    url: https://careers.servicenow.com/jobs/?search=Software+Engineer&country=United+States&pagesize=20#results
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    seed_recent_hours: 0
-    playwright_link_patterns:
-      - /jobs/
-      - /job/
-  - name: Applied Materials
-    url: https://careers.appliedmaterials.com/careers?domain=appliedmaterials.com&query=Software+Engineer&start=0&location=United+States&sort_by=timestamp&filter_include_remote=1
-    kind: eightfold
-    interval_minutes: 20
-    assume_us_only: true
-    seed_recent_hours: 0
-  - name: StubHub
-    url: https://job-boards.greenhouse.io/stubhubinc?departments%5B%5D=4034328101&offices%5B%5D=4016793101&offices%5B%5D=4016794101&offices%5B%5D=4016792101&offices%5B%5D=4016791101&offices%5B%5D=4029220101&offices%5B%5D=4029221101&keyword=Software+Engineer
-    kind: greenhouse
-    company: stubhubinc
-    interval_minutes: 20
-    assume_us_only: true
-    seed_recent_hours: 0
-  - name: QuinStreet
-    url: https://www.quinstreet.com/careers/?gh_jid=7605753&gh_src=po1n8bwm1us&__jvst=Job+Board&__jvsd=LinkedIn&source=LinkedIn
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    seed_recent_hours: 0
-    playwright_link_patterns:
-      - gh_jid=
-      - /careers/
-  - name: Cisco
-    url: https://careers.cisco.com/global/en/search-results?keywords=Software%20Engineer
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    seed_recent_hours: 0
-    playwright_link_patterns:
-      - /job/
-      - /global/en/job/
-  - name: CVS Health
-    url: https://jobs.cvshealth.com/us/en/search-results?m=3&keywords=Software%20Engineer&lk=united%2520states
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    seed_recent_hours: 0
-    playwright_link_patterns:
-      - /job/
-      - /us/en/job/
-  - name: eBay
-    url: https://jobs.ebayinc.com/us/en/c/engineering-jobs?s=1
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    seed_recent_hours: 0
-    playwright_link_patterns:
-      - /job/
-      - /us/en/job/
-  - name: T-Mobile
-    url: https://careers.t-mobile.com/?page_number=1&keyword=Software&sort_by=update_date&location_name=United%20States&location_type=4
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    seed_recent_hours: 0
-    playwright_link_patterns:
-      - /job/
-  - name: EY
-    url: https://careers.ey.com/ey/search/?createNewAlert=false&q=Software+engineer&optionsFacetsDD_customfield1=&optionsFacetsDD_country=US&optionsFacetsDD_city=
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    seed_recent_hours: 0
-    include_keywords:
-      - developer
-      - full stack
-      - back end
-      - backend
-      - context engineer
-    playwright_link_patterns:
-      - /job/
-      - /ey/job/
-  - name: Mastercard
-    url: https://careers.mastercard.com/us/en/c/software-engineering-jobs#SWESearchResults
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    seed_recent_hours: 0
-    playwright_link_patterns:
-      - /job/
-      - /us/en/job/
-  - name: Meta
-    url: https://www.metacareers.com/jobsearch?q=Software%20engineer
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    seed_recent_hours: 0
-    playwright_link_patterns:
-      - /profile/job_details/
-  - name: Google
-    url: https://www.google.com/about/careers/applications/jobs/results/?q=Software%20Engineer&location=United%20States&hl=en&sort_by=date&target_level=MID&target_level=EARLY
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Airbnb
-    url: https://careers.airbnb.com/positions/?_departments=engineering&_offices=united-states&_jobs_sort=updated_at
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Lyft
-    url: https://www.lyft.com/careers#openings
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Expedia
-    url: https://careers.expediagroup.com/jobs/?filter%5Bcountry%5D=United+States
-    kind: expedia
-    interval_minutes: 30
-    assume_us_only: true
-  - name: Atlassian
-    url: https://www.atlassian.com/company/careers/all-jobs?team=Engineering%2CProduct%20Management&location=United%20States&search=
-    kind: atlassian
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Oracle
-    url: https://careers.oracle.com/en/sites/jobsearch/jobs?keyword=Software&lastSelectedFacet=POSTING_DATES&mode=location&selectedCategoriesFacet=300000001917356&selectedFlexFieldsFacets=%22AttributeChar4%7CEmployee%7C%7CAttributeChar6%7C3+to+5%2B+years%7C%7CAttributeChar13%7CProfessional%22&selectedLocationsFacet=300000000149325&selectedPostingDatesFacet=7&sortBy=POSTING_DATES_DESC
-    interval_minutes: 20
-    assume_us_only: true
-    enabled: false
-  - name: Uber
-    url: https://www.uber.com/us/en/careers/list/?query=Software%20engineer&department=Engineering&team=Backend&team=Data&team=Engineering&team=Fullstack
-    kind: uber
-    interval_minutes: 20
-    assume_us_only: true
-  - name: OpenAI
-    url: https://jobs.ashbyhq.com/openai
-    interval_minutes: 20
-    assume_us_only: false
-  - name: Dropbox (Direct)
-    url: https://www.dropbox.jobs/en/jobs/?search=software+engineer&location=Remote+-+US%3A+All+locations&pagesize=20#results
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Coinbase (Direct)
-    url: https://www.coinbase.com/careers/positions?search=software%2520engineer
-    interval_minutes: 20
-    assume_us_only: true
-    enabled: false
-  - name: Asana (Direct)
-    url: https://asana.com/jobs/all
-    interval_minutes: 20
-    assume_us_only: true
-  - name: CaptivateIQ
-    url: https://www.captivateiq.com/careers
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    include_keywords:
-      - software engineer
-      - software development engineer
-      - sde
-      - forward deployed engineer
-      - forward deployed ai engineer
-      - ai forward deployed engineer
-      - solution engineer
-      - solutions engineer
-    playwright_link_patterns:
-      - /careers/
-      - /job/
-      - gh_jid=
-  - name: Spotify (Lever)
-    url: https://jobs.lever.co/spotify/
-    kind: lever
-    company: spotify
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Netflix (Direct)
-    url: https://explore.jobs.netflix.net/careers?query=Software%20engineer&location=any&domain=netflix.com&sort_by=new&triggerGoButton=false
-    interval_minutes: 30
-    assume_us_only: true
-    include_keywords:
-      - software engineer
-      - software development engineer
-      - senior software engineer
-      - sr software engineer
-      - sr. software engineer
-      - sde
-  - name: Duolingo (Direct)
-    url: https://careers.duolingo.com/#careers
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    playwright_link_patterns:
-      - /jobs/
-  - name: Spotify (Direct)
-    url: https://www.lifeatspotify.com/jobs?c=backend&c=client-c&c=data&c=developer-tools-infrastructure&c=engineering-leadership&c=machine-learning&c=mobile&c=network-engineering-it&c=security&c=tech-research&c=web&l=new-york&l=boston&l=united-states-of-america-home-mix&l=chicago&l=los-angeles&l=miami
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Adobe (Direct)
-    url: https://careers.adobe.com/us/en/c/engineering-and-product-jobs
-    kind: adobe
-    interval_minutes: 20
-    assume_us_only: true
-  - name: HPE
-    url: https://careers.hpe.com/us/en/search-results
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    playwright_link_patterns:
-      - /job/
-      - /us/en/job/
-  - name: Snowflake (Direct)
-    url: https://careers.snowflake.com/us/en/search-results?keywords=software%20engineer
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    playwright_link_patterns:
-      - /job/
-      - /us/en/job/
-  - name: Barclays
-    url: https://search.jobs.barclays/search-jobs/Software%20engineer/United%20States/13015/1/2/6252001/39x76/-98x5/50/2
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Deloitte
-    url: https://apply.deloitte.com/en_US/careers/SearchJobs/Software%20engineer?listFilterMode=1&jobRecordsPerPage=10&sort=relevancy
-    interval_minutes: 20
-    assume_us_only: true
-  - name: BlackRock
-    url: https://careers.blackrock.com/search-jobs/Software/45831/1
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Citi
-    url: https://jobs.citi.com/search-jobs/Software/287/1
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Grammarly
-    url: https://job-boards.greenhouse.io/grammarly?departments%5B%5D=7014
-    kind: greenhouse
-    company: grammarly
-    interval_minutes: 20
-    assume_us_only: true
-    enabled: false
-  - name: Intel
-    url: https://intel.wd1.myworkdayjobs.com/en-US/External?q=Software%20engineer&locations=1e4a4eb3adf101cc4e292078bf8199d0&locations=1e4a4eb3adf10146fd5c5276bf81eece&locations=da6b8032b879100204a63a809f6c0000&locations=1e4a4eb3adf101989587fd77bf8176d0&locations=1e4a4eb3adf10118b1dfe877bf8162d0&locations=1e4a4eb3adf10129d05fe377bf815dd0&locations=1e4a4eb3adf1019ec42cde77bf8158d0&locations=1e4a4eb3adf1018c4bf78f77bf8112d0&locations=1e4a4eb3adf101b8aec18a77bf810dd0&locations=1e4a4eb3adf1011246675c76bf81f8ce&locations=1e4a4eb3adf101fa2a777d76bf8116cf&locations=1e4a4eb3adf1016541777876bf8111cf&jobFamilyGroup=ace7a3d23b7e01a0544279031a0ec85c
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
-    playwright_link_patterns:
-      - /job/
-  - name: Morgan Stanley
-    url: https://morganstanley.eightfold.ai/careers?source=mscom&domain=morganstanley.com&query=Software+engineer&location=United+States&sort_by=relevance&filter_include_remote=1
-    kind: eightfold
-    interval_minutes: 20
-    assume_us_only: true
-  - name: Chewy (Direct)
-    url: https://careers.chewy.com/us/en/search-results?keywords=software%20engineer
-    kind: playwright_links
-    interval_minutes: 30
-    assume_us_only: true
+- name: Apple
+  url: https://jobs.apple.com/en-us/search?location=united-states-USA
+  interval_minutes: 20
+  assume_us_only: true
+- name: Microsoft
+  url: https://apply.careers.microsoft.com/careers?query=software+engineer&start=0&location=united+states&pid=1970393556621801&sort_by=timestamp&filter_include_remote=1
+  interval_minutes: 10
+  assume_us_only: true
+- name: Amazon
+  url: https://www.amazon.jobs/en/search?offset=0&result_limit=25&sort=recent&country%5B%5D=USA&distanceType=Mi&radius=24km&latitude=&longitude=&loc_group_id=&loc_query=&base_query=software%20engineer&city=&country=&region=&county=&query_options=&
+  kind: amazon
+  interval_minutes: 30
+  assume_us_only: true
+  amazon_max_posted_age_days: 7
+  seed_recent_hours: 0
+- name: FICO
+  url: https://fico.wd1.myworkdayjobs.com/en-US/External?locations=a46e175d937b106cf81d31f8ea94fa25&locations=680ba5c8ca2501b19fadb2b46601c73d
+  kind: workday
+  interval_minutes: 120
+  assume_us_only: true
+  workday_limit: 20
+  seed_recent_hours: 0
+- name: Capital One
+  url: https://www.capitalonecareers.com/search-jobs/United%20States/234/2/6252001/39x76/-98x5/50/2
+  kind: capitalone
+  interval_minutes: 120
+  assume_us_only: true
+  include_keywords:
+  - product management
+  - product manager
+  seed_recent_hours: 0
+- name: Goldman
+  display_name: Goldman Sachs
+  url: https://higher.gs.com/results?LOCATION=Albany|New%20York|Atlanta|Baltimore|Boston|Chicago|Dallas|Houston|Irving|Richardson|Denver|Detroit|Troy|Draper|Salt%20Lake%20City|Jersey%20City|Morristown|Menlo%20Park|Newport%20Beach|San%20Francisco|Miami|West%20Palm%20Beach|Norwalk|Philadelphia|Pittsburgh|Seattle|Washington|Wilmington&page=1&sort=POSTED_DATE
+  kind: highergs
+  interval_minutes: 10
+  assume_us_only: true
+  seed_recent_hours: 0
+- name: SimplyHired
+  url: https://www.simplyhired.com/search?q=software+engineer&l=
+  kind: simplyhired
+  interval_minutes: 20
+  assume_us_only: true
+  seed_recent_hours: 0
+  simplyhired_max_pages: 1
+  simplyhired_queries:
+  - software engineer
+  - software development engineer
+  - forward deployed engineer
+  - ai engineer
+  - ai software engineer
+  notify_recent_hours: 72
+  notify_require_posted_at: true
+  email_subject_prefix: '[Job Board]'
+- name: We Work Remotely
+  url: https://weworkremotely.com/
+  kind: generic
+  interval_minutes: 20
+  assume_us_only: true
+  seed_recent_hours: 0
+  job_link_patterns:
+  - /remote-jobs/
+  job_link_exclude_patterns:
+  - find-your-plan
+  infer_relative_age_from_title: true
+  notify_recent_hours: 72
+  notify_require_posted_at: true
+  email_subject_prefix: '[Job Board]'
+- name: Remotive
+  url: https://remotive.com/remote-jobs/software-development
+  kind: generic
+  interval_minutes: 20
+  assume_us_only: true
+  seed_recent_hours: 0
+  job_link_patterns:
+  - https://remotive.com/remote-jobs/
+  ignored_link_titles:
+  - View Job >
+  email_subject_prefix: '[Job Board]'
+  detail_jsonld_enrich: true
+  detail_jsonld_max_jobs: 10
+  detail_timeout_seconds: 20
+  detail_retries: 1
+  notify_recent_hours: 72
+  notify_require_posted_at: true
+- name: HiringCafe
+  url: https://hiring.cafe/?searchState=%7B%22searchQuery%22%3A%22software%20engineer%22%2C%22locations%22%3A%5B%7B%22country%22%3A%22United%20States%22%7D%5D%7D
+  kind: generic
+  interval_minutes: 20
+  assume_us_only: false
+  seed_recent_hours: 0
+  job_link_patterns:
+  - /job/
+  infer_title_from_url_when_titles:
+  - Job Posting
+  email_subject_prefix: '[Job Board]'
+  detail_jsonld_enrich: true
+  detail_jsonld_max_jobs: 50
+  detail_timeout_seconds: 15
+  detail_retries: 1
+  notify_recent_hours: 72
+  notify_require_posted_at: true
+  preserve_date_only_posted_at: true
+- name: Built In
+  url: https://builtin.com/jobs?daysSinceUpdated=1&city=&state=&country=USA&allLocations=true
+  kind: generic
+  interval_minutes: 20
+  assume_us_only: true
+  seed_recent_hours: 0
+  job_link_patterns:
+  - /job/
+  email_subject_prefix: '[Job Board]'
+- name: HNHiring
+  display_name: HNhiring
+  url: https://hnhiring.com/july-2026
+  kind: hnhiring
+  interval_minutes: 20
+  assume_us_only: false
+  seed_recent_hours: 0
+  notify_recent_hours: 72
+  notify_require_posted_at: true
+  email_subject_prefix: '[Job Board]'
+- name: Insight Global
+  url: https://jobs.insightglobal.com/find_a_job/?srch=software%20engineer&rd=Distance&remote=true
+  kind: generic
+  interval_minutes: 20
+  assume_us_only: true
+  seed_recent_hours: 0
+  job_link_patterns:
+  - /jobs/find_a_job/
+  email_subject_prefix: '[Job Board]'
+  detail_jsonld_enrich: true
+  detail_jsonld_max_jobs: 15
+  detail_timeout_seconds: 20
+  detail_retries: 1
+  notify_recent_hours: 72
+  notify_require_posted_at: true
+  preserve_date_only_posted_at: true
+- name: Apex Systems
+  url: https://www.apexsystems.com/search-results-usa?catalogcode=USA&address=&radius=50&page=1&rows=25&query=software%20engineer&remote=
+  kind: generic
+  interval_minutes: 20
+  assume_us_only: true
+  seed_recent_hours: 0
+  selectors:
+    job_card: tr
+    title: td:nth-of-type(1) a
+    link: td:nth-of-type(1) a
+    location_parts:
+    - td:nth-of-type(2)
+    - td:nth-of-type(3)
+    posted_at: td:nth-of-type(4)
+  notify_recent_hours: 72
+  notify_require_posted_at: true
+  email_subject_prefix: '[Job Board]'
+  preserve_date_only_posted_at: true
+- name: Salesforce
+  url: https://careers.salesforce.com/en/jobs/?search=&country=United+States+of+America&pagesize=20#results
+  kind: salesforce
+  interval_minutes: 20
+  assume_us_only: true
+  include_keywords:
+  - software engineer
+  - ai software engineer
+  - forward deployed engineer
+  - forward deployed ai engineer
+  - ai forward deployed engineer
+  seed_recent_hours: 0
+- name: Bank of America
+  url: https://careers.bankofamerica.com/en-us/job-search?ref=search&search=jobsByLocation&rows=25&start=0&keywords=software+engineer&sort=newest&searchstring=United+States
+  kind: bankofamerica
+  interval_minutes: 20
+  assume_us_only: true
+  timeout_seconds: 45
+  request_retries: 4
+  request_backoff_seconds: 1.5
+  seed_recent_hours: 0
+- name: Intuit
+  url: https://jobs.intuit.com/search-jobs/
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  seed_recent_hours: 0
+  exclude_keywords:
+  - manager
+  playwright_link_patterns:
+  - /job/
+- name: PayPal
+  url: https://paypal.eightfold.ai/careers?domain=paypal.com&customredirect=1&start=0&location=United+States&sort_by=timestamp&filter_include_remote=1&query=Software+Engineer
+  kind: eightfold
+  interval_minutes: 20
+  assume_us_only: true
+  seed_recent_hours: 0
+  notify_recent_hours: 72
+- name: NVIDIA
+  url: https://jobs.nvidia.com/careers?query=Software+engineer&start=0&sort_by=timestamp&domain=nvidia.com
+  kind: eightfold
+  interval_minutes: 20
+  assume_us_only: true
+  seed_recent_hours: 0
+- name: American Express
+  url: https://aexp.eightfold.ai/careers?query=Software%20Engineer&location=United%20States&domain=aexp.com&sort_by=relevance&hl=en&triggerGoButton=false
+  kind: generic
+  interval_minutes: 20
+  assume_us_only: true
+  seed_recent_hours: 0
+- name: ServiceNow
+  url: https://careers.servicenow.com/jobs/?search=Software+Engineer&country=United+States&pagesize=20#results
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  seed_recent_hours: 0
+  playwright_link_patterns:
+  - /jobs/
+  - /job/
+- name: Applied Materials
+  url: https://careers.appliedmaterials.com/careers?domain=appliedmaterials.com&query=Software+Engineer&start=0&location=United+States&sort_by=timestamp&filter_include_remote=1
+  kind: eightfold
+  interval_minutes: 20
+  assume_us_only: true
+  seed_recent_hours: 0
+- name: StubHub
+  url: https://job-boards.greenhouse.io/stubhubinc?departments%5B%5D=4034328101&offices%5B%5D=4016793101&offices%5B%5D=4016794101&offices%5B%5D=4016792101&offices%5B%5D=4016791101&offices%5B%5D=4029220101&offices%5B%5D=4029221101&keyword=Software+Engineer
+  kind: greenhouse
+  company: stubhubinc
+  interval_minutes: 20
+  assume_us_only: true
+  seed_recent_hours: 0
+- name: QuinStreet
+  url: https://www.quinstreet.com/careers/?gh_jid=7605753&gh_src=po1n8bwm1us&__jvst=Job+Board&__jvsd=LinkedIn&source=LinkedIn
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  seed_recent_hours: 0
+  playwright_link_patterns:
+  - gh_jid=
+  - /careers/
+- name: Cisco
+  url: https://careers.cisco.com/global/en/search-results?keywords=Software%20Engineer
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  seed_recent_hours: 0
+  playwright_link_patterns:
+  - /job/
+  - /global/en/job/
+- name: CVS Health
+  url: https://jobs.cvshealth.com/us/en/search-results?m=3&keywords=Software%20Engineer&lk=united%2520states
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  seed_recent_hours: 0
+  playwright_link_patterns:
+  - /job/
+  - /us/en/job/
+- name: eBay
+  url: https://jobs.ebayinc.com/us/en/c/engineering-jobs?s=1
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  seed_recent_hours: 0
+  playwright_link_patterns:
+  - /job/
+  - /us/en/job/
+- name: T-Mobile
+  url: https://careers.t-mobile.com/?page_number=1&keyword=Software&sort_by=update_date&location_name=United%20States&location_type=4
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  seed_recent_hours: 0
+  playwright_link_patterns:
+  - /job/
+- name: EY
+  url: https://careers.ey.com/ey/search/?createNewAlert=false&q=Software+engineer&optionsFacetsDD_customfield1=&optionsFacetsDD_country=US&optionsFacetsDD_city=
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  seed_recent_hours: 0
+  include_keywords:
+  - developer
+  - full stack
+  - back end
+  - backend
+  - context engineer
+  playwright_link_patterns:
+  - /job/
+  - /ey/job/
+- name: Mastercard
+  url: https://careers.mastercard.com/us/en/c/software-engineering-jobs#SWESearchResults
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  seed_recent_hours: 0
+  playwright_link_patterns:
+  - /job/
+  - /us/en/job/
+- name: Meta
+  url: https://www.metacareers.com/jobsearch?q=Software%20engineer
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  seed_recent_hours: 0
+  playwright_link_patterns:
+  - /profile/job_details/
+- name: Google
+  url: https://www.google.com/about/careers/applications/jobs/results/?q=Software%20Engineer&location=United%20States&hl=en&sort_by=date&target_level=MID&target_level=EARLY
+  interval_minutes: 20
+  assume_us_only: true
+- name: Airbnb
+  url: https://careers.airbnb.com/positions/?_departments=engineering&_offices=united-states&_jobs_sort=updated_at
+  interval_minutes: 20
+  assume_us_only: true
+- name: Lyft
+  url: https://www.lyft.com/careers#openings
+  interval_minutes: 20
+  assume_us_only: true
+- name: Expedia
+  url: https://careers.expediagroup.com/jobs/?filter%5Bcountry%5D=United+States
+  kind: expedia
+  interval_minutes: 30
+  assume_us_only: true
+- name: Atlassian
+  url: https://www.atlassian.com/company/careers/all-jobs?team=Engineering%2CProduct%20Management&location=United%20States&search=
+  kind: atlassian
+  interval_minutes: 20
+  assume_us_only: true
+- name: Oracle
+  url: https://careers.oracle.com/en/sites/jobsearch/jobs?keyword=Software&lastSelectedFacet=POSTING_DATES&mode=location&selectedCategoriesFacet=300000001917356&selectedFlexFieldsFacets=%22AttributeChar4%7CEmployee%7C%7CAttributeChar6%7C3+to+5%2B+years%7C%7CAttributeChar13%7CProfessional%22&selectedLocationsFacet=300000000149325&selectedPostingDatesFacet=7&sortBy=POSTING_DATES_DESC
+  interval_minutes: 20
+  assume_us_only: true
+  enabled: false
+- name: Uber
+  url: https://jobs.uber.com/en/jobs/?search=Software+Engineer&radius=1000
+  kind: uber
+  interval_minutes: 20
+  assume_us_only: true
+- name: OpenAI
+  url: https://jobs.ashbyhq.com/openai
+  interval_minutes: 20
+  assume_us_only: false
+- name: Dropbox (Direct)
+  url: https://www.dropbox.jobs/en/jobs/?search=software+engineer&location=Remote+-+US%3A+All+locations&pagesize=20#results
+  interval_minutes: 20
+  assume_us_only: true
+- name: Coinbase (Direct)
+  url: https://www.coinbase.com/careers/positions?search=software%2520engineer
+  interval_minutes: 20
+  assume_us_only: true
+  enabled: false
+- name: Asana (Direct)
+  url: https://asana.com/jobs/all
+  interval_minutes: 20
+  assume_us_only: true
+- name: CaptivateIQ
+  url: https://www.captivateiq.com/careers
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  include_keywords:
+  - software engineer
+  - software development engineer
+  - sde
+  - forward deployed engineer
+  - forward deployed ai engineer
+  - ai forward deployed engineer
+  - solution engineer
+  - solutions engineer
+  playwright_link_patterns:
+  - /careers/
+  - /job/
+  - gh_jid=
+- name: Spotify (Lever)
+  url: https://jobs.lever.co/spotify/
+  kind: lever
+  company: spotify
+  interval_minutes: 20
+  assume_us_only: true
+- name: Netflix (Direct)
+  url: https://explore.jobs.netflix.net/careers?query=Software%20engineer&location=any&domain=netflix.com&sort_by=new&triggerGoButton=false
+  interval_minutes: 30
+  assume_us_only: true
+  include_keywords:
+  - software engineer
+  - software development engineer
+  - senior software engineer
+  - sr software engineer
+  - sr. software engineer
+  - sde
+- name: Duolingo (Direct)
+  url: https://careers.duolingo.com/#careers
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  playwright_link_patterns:
+  - /jobs/
+- name: Spotify (Direct)
+  url: https://www.lifeatspotify.com/jobs?c=backend&c=client-c&c=data&c=developer-tools-infrastructure&c=engineering-leadership&c=machine-learning&c=mobile&c=network-engineering-it&c=security&c=tech-research&c=web&l=new-york&l=boston&l=united-states-of-america-home-mix&l=chicago&l=los-angeles&l=miami
+  interval_minutes: 20
+  assume_us_only: true
+- name: Adobe (Direct)
+  url: https://careers.adobe.com/us/en/c/engineering-and-product-jobs
+  kind: adobe
+  interval_minutes: 20
+  assume_us_only: true
+- name: HPE
+  url: https://careers.hpe.com/us/en/search-results
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  playwright_link_patterns:
+  - /job/
+  - /us/en/job/
+- name: Snowflake (Direct)
+  url: https://careers.snowflake.com/us/en/search-results?keywords=software%20engineer
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  playwright_link_patterns:
+  - /job/
+  - /us/en/job/
+- name: Barclays
+  url: https://search.jobs.barclays/search-jobs/Software%20engineer/United%20States/13015/1/2/6252001/39x76/-98x5/50/2
+  interval_minutes: 20
+  assume_us_only: true
+- name: Deloitte
+  url: https://apply.deloitte.com/en_US/careers/SearchJobs/Software%20engineer?listFilterMode=1&jobRecordsPerPage=10&sort=relevancy
+  interval_minutes: 20
+  assume_us_only: true
+- name: BlackRock
+  url: https://careers.blackrock.com/search-jobs/Software/45831/1
+  interval_minutes: 20
+  assume_us_only: true
+- name: Citi
+  url: https://jobs.citi.com/search-jobs/Software/287/1
+  interval_minutes: 20
+  assume_us_only: true
+- name: Grammarly
+  url: https://job-boards.greenhouse.io/grammarly?departments%5B%5D=7014
+  kind: greenhouse
+  company: grammarly
+  interval_minutes: 20
+  assume_us_only: true
+  enabled: false
+- name: Intel
+  url: https://intel.wd1.myworkdayjobs.com/en-US/External?q=Software%20engineer&locations=1e4a4eb3adf101cc4e292078bf8199d0&locations=1e4a4eb3adf10146fd5c5276bf81eece&locations=da6b8032b879100204a63a809f6c0000&locations=1e4a4eb3adf101989587fd77bf8176d0&locations=1e4a4eb3adf10118b1dfe877bf8162d0&locations=1e4a4eb3adf10129d05fe377bf815dd0&locations=1e4a4eb3adf1019ec42cde77bf8158d0&locations=1e4a4eb3adf1018c4bf78f77bf8112d0&locations=1e4a4eb3adf101b8aec18a77bf810dd0&locations=1e4a4eb3adf1011246675c76bf81f8ce&locations=1e4a4eb3adf101fa2a777d76bf8116cf&locations=1e4a4eb3adf1016541777876bf8111cf&jobFamilyGroup=ace7a3d23b7e01a0544279031a0ec85c
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true
+  playwright_link_patterns:
+  - /job/
+- name: Morgan Stanley
+  url: https://morganstanley.eightfold.ai/careers?source=mscom&domain=morganstanley.com&query=Software+engineer&location=United+States&sort_by=relevance&filter_include_remote=1
+  kind: eightfold
+  interval_minutes: 20
+  assume_us_only: true
+- name: Chewy (Direct)
+  url: https://careers.chewy.com/us/en/search-results?keywords=software%20engineer
+  kind: playwright_links
+  interval_minutes: 30
+  assume_us_only: true

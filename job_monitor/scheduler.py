@@ -24,7 +24,7 @@ from .filters import compile_keywords, extend_patterns, matches_filters
 from .http_utils import build_session
 from .notify import OutboundEmail, build_error_email, build_jobs_email, send_email, send_email_batch
 from .sources import fetch_jobs_for_source
-from .utils import is_date_only_posted_at
+from .utils import is_date_only_posted_at, normalize_text
 
 
 logger = logging.getLogger(__name__)
@@ -77,14 +77,28 @@ def send_error_notification(email_cfg: dict, source_name: str, error_message: st
     )
 
 
-def format_subject(source_name: str, count: int) -> str:
+def normalize_source_name(source_name: str) -> str:
+    return normalize_text(source_name).lower().replace(" ", "")
+
+
+def format_subject(source_name: str, count: int, *, subject_prefix: str = "") -> str:
+    prefix = f"{normalize_text(subject_prefix)} " if normalize_text(subject_prefix) else ""
+    if normalize_source_name(source_name) == "hnhiring":
+        noun = "post" if count == 1 else "posts"
+        action = "check it out" if count == 1 else "check them out"
+        return f"{prefix}{count} new HNhiring {noun}, {action}."
     noun = "job" if count == 1 else "jobs"
-    return f"{count} new {noun} from {source_name}, check them out."
+    action = "check it out" if count == 1 else "check them out"
+    return f"{prefix}{count} new {noun} from {source_name}, {action}."
 
 
 def format_header(source_name: str, count: int) -> str:
+    if normalize_source_name(source_name) == "hnhiring":
+        noun = "post" if count == 1 else "posts"
+        return f"{count} new HNhiring {noun}:"
     noun = "job" if count == 1 else "jobs"
-    return f"{count} new {noun} from {source_name}, check them out:"
+    action = "check it out" if count == 1 else "check them out"
+    return f"{count} new {noun} from {source_name}, {action}:"
 
 
 def should_notify_seed(
@@ -120,9 +134,72 @@ def should_notify_recent(
     return job.posted_at >= (now - timedelta(hours=notify_recent_hours))
 
 
+def build_source_notify_policy_map(sources: List[dict], notifications_cfg: dict) -> Dict[str, dict]:
+    default_recent_hours = int(notifications_cfg.get("notify_recent_hours") or 0)
+    default_require_posted_at = bool(notifications_cfg.get("notify_require_posted_at", True))
+    return {
+        source["name"]: {
+            "notify_recent_hours": int(source.get("notify_recent_hours", default_recent_hours) or 0),
+            "notify_require_posted_at": bool(source.get("notify_require_posted_at", default_require_posted_at)),
+        }
+        for source in sources
+    }
+
+
+def should_notify_original_posted_recent(
+    *,
+    original_posted_at,
+    now: datetime,
+    notify_recent_hours: int,
+    notify_require_posted_at: bool,
+) -> bool:
+    """Apply recency gates before date-only values are normalized to seen time."""
+    if not notify_recent_hours:
+        return True
+    if not original_posted_at:
+        return not notify_require_posted_at
+    return original_posted_at >= (now - timedelta(hours=notify_recent_hours))
+
+
 def normalize_job_posted_at(job, *, now: datetime) -> None:
-    if job.posted_at is None or is_date_only_posted_at(job):
+    raw = job.raw if isinstance(job.raw, dict) else {}
+    if job.posted_at is None:
+        raw["posted_at_display_label"] = "seen"
+        raw["posted_at_fallback"] = True
+        job.raw = raw
         job.posted_at = now
+        return
+
+    if is_date_only_posted_at(job):
+        if raw.get("preserve_date_only_posted_at"):
+            raw["posted_at_display_date_only"] = True
+            raw["posted_at_fallback"] = False
+            job.raw = raw
+            return
+        raw["posted_at_display_label"] = "seen"
+        raw["posted_at_fallback"] = True
+        job.raw = raw
+        job.posted_at = now
+
+
+def should_send_existing_notification(
+    job,
+    *,
+    now: datetime,
+    source_notify_policy_map: Dict[str, dict],
+) -> bool:
+    policy = source_notify_policy_map.get(job.source) or {}
+    notify_recent_hours = int(policy.get("notify_recent_hours") or 0)
+    notify_require_posted_at = bool(policy.get("notify_require_posted_at", True))
+    raw = job.raw if isinstance(job.raw, dict) else {}
+    if notify_require_posted_at and raw.get("posted_at_fallback"):
+        return False
+    return should_notify_recent(
+        job=job,
+        now=now,
+        notify_recent_hours=notify_recent_hours,
+        notify_require_posted_at=notify_require_posted_at,
+    )
 
 
 def is_transient_fetch_error(exc: Exception) -> bool:
@@ -161,6 +238,7 @@ def send_job_notifications(
     tz,
     now: datetime,
     context: str,
+    source_subject_prefix_map: Dict[str, str] | None = None,
 ) -> None:
     if not jobs_by_source:
         return
@@ -169,7 +247,8 @@ def send_job_notifications(
     messages: List[OutboundEmail] = []
     for source_name, jobs in jobs_by_source.items():
         display_name = source_display_map.get(source_name, source_name)
-        subject = format_subject(display_name, len(jobs))
+        subject_prefix = (source_subject_prefix_map or {}).get(source_name, "")
+        subject = format_subject(display_name, len(jobs), subject_prefix=subject_prefix)
         header = format_header(display_name, len(jobs))
         body = build_jobs_email(jobs, header, tz=tz)
         groups.append((source_name, jobs))
@@ -228,6 +307,8 @@ def process_pending_notifications(
     email_cfg: dict,
     notifications_cfg: dict,
     source_display_map: Dict[str, str],
+    source_subject_prefix_map: Dict[str, str],
+    source_notify_policy_map: Dict[str, dict],
     tz,
     now: datetime,
 ) -> None:
@@ -236,20 +317,42 @@ def process_pending_notifications(
     if not pending_jobs:
         return
 
-    logger.info("Retrying %s pending job notification(s)", len(pending_jobs))
+    sendable_jobs = []
+    suppressed_jobs = []
+    for job in pending_jobs:
+        if should_send_existing_notification(job, now=now, source_notify_policy_map=source_notify_policy_map):
+            sendable_jobs.append(job)
+        else:
+            suppressed_jobs.append(job)
+
+    if suppressed_jobs:
+        mark_notified(conn, [job.job_id for job in suppressed_jobs], notified_at=now)
+        logger.warning("Suppressed %s stale pending job notification(s)", len(suppressed_jobs))
+
+    if not sendable_jobs:
+        return
+
+    logger.info("Retrying %s pending job notification(s)", len(sendable_jobs))
     send_job_notifications(
         conn=conn,
         email_cfg=email_cfg,
         notifications_cfg=notifications_cfg,
-        jobs_by_source=group_jobs_by_source(pending_jobs),
+        jobs_by_source=group_jobs_by_source(sendable_jobs),
         source_display_map=source_display_map,
+        source_subject_prefix_map=source_subject_prefix_map,
         tz=tz,
         now=now,
         context="pending",
     )
 
 
-def recover_pending_notifications_if_needed(conn, notifications_cfg: dict, *, now: datetime) -> None:
+def recover_pending_notifications_if_needed(
+    conn,
+    notifications_cfg: dict,
+    *,
+    source_notify_policy_map: Dict[str, dict],
+    now: datetime,
+) -> None:
     lookback_hours = int(notifications_cfg.get("recover_unnotified_since_last_success_hours", 48) or 0)
     if not lookback_hours:
         return
@@ -258,6 +361,7 @@ def recover_pending_notifications_if_needed(conn, notifications_cfg: dict, *, no
         conn,
         now=now,
         lookback_hours=lookback_hours,
+        source_notify_policies=source_notify_policy_map,
     )
     if recovered:
         logger.warning("Recovered %s recently stranded unnotified job(s) for retry", recovered)
@@ -279,16 +383,25 @@ def run_once(cfg: dict, *, db_path: str) -> None:
     notify_require_posted_at = bool(notifications_cfg.get("notify_require_posted_at", True))
     ignore_error_statuses = set(notifications_cfg.get("ignore_error_statuses", []))
     source_display_map = {s["name"]: s.get("display_name", s["name"]) for s in cfg["sources"]}
+    source_subject_prefix_map = {s["name"]: s.get("email_subject_prefix", "") for s in cfg["sources"]}
+    source_notify_policy_map = build_source_notify_policy_map(cfg["sources"], notifications_cfg)
 
     conn = init_db(db_path)
 
     session = build_session()
-    recover_pending_notifications_if_needed(conn, notifications_cfg, now=now)
+    recover_pending_notifications_if_needed(
+        conn,
+        notifications_cfg,
+        source_notify_policy_map=source_notify_policy_map,
+        now=now,
+    )
     process_pending_notifications(
         conn=conn,
         email_cfg=email_cfg,
         notifications_cfg=notifications_cfg,
         source_display_map=source_display_map,
+        source_subject_prefix_map=source_subject_prefix_map,
+        source_notify_policy_map=source_notify_policy_map,
         tz=tz,
         now=now,
     )
@@ -332,6 +445,7 @@ def run_once(cfg: dict, *, db_path: str) -> None:
         source_notify_require_posted_at = bool(source.get("notify_require_posted_at", notify_require_posted_at))
 
         for job in jobs:
+            original_posted_at = job.posted_at
             normalize_job_posted_at(job, now=now)
             if not matches_filters(
                 job.title,
@@ -349,19 +463,27 @@ def run_once(cfg: dict, *, db_path: str) -> None:
                 continue
 
             insert_job(conn, job, first_seen=now)
-            if should_notify_seed(
+            should_send_notification = should_notify_seed(
                 seeded=seeded,
                 job=job,
                 now=now,
                 seed_recent_hours=source_seed_recent_hours,
                 seed_require_posted_at=source_seed_require_posted_at,
+            ) and should_notify_original_posted_recent(
+                original_posted_at=original_posted_at,
+                now=now,
+                notify_recent_hours=source_notify_recent_hours,
+                notify_require_posted_at=source_notify_require_posted_at,
             ) and should_notify_recent(
                 job=job,
                 now=now,
                 notify_recent_hours=source_notify_recent_hours,
                 notify_require_posted_at=source_notify_require_posted_at,
-            ):
+            )
+            if should_send_notification:
                 new_jobs.append(job)
+            else:
+                mark_notified(conn, [job.job_id], notified_at=now)
 
     if new_jobs:
         send_job_notifications(
@@ -370,6 +492,7 @@ def run_once(cfg: dict, *, db_path: str) -> None:
             notifications_cfg=notifications_cfg,
             jobs_by_source=group_jobs_by_source(new_jobs),
             source_display_map=source_display_map,
+            source_subject_prefix_map=source_subject_prefix_map,
             tz=tz,
             now=now,
             context="new-job",
@@ -391,11 +514,18 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
     notify_require_posted_at = bool(notifications_cfg.get("notify_require_posted_at", True))
     ignore_error_statuses = set(notifications_cfg.get("ignore_error_statuses", []))
     source_display_map = {s["name"]: s.get("display_name", s["name"]) for s in cfg["sources"]}
+    source_subject_prefix_map = {s["name"]: s.get("email_subject_prefix", "") for s in cfg["sources"]}
+    source_notify_policy_map = build_source_notify_policy_map(cfg["sources"], notifications_cfg)
 
     conn = init_db(db_path)
 
     session = build_session()
-    recover_pending_notifications_if_needed(conn, notifications_cfg, now=datetime.now(tz))
+    recover_pending_notifications_if_needed(
+        conn,
+        notifications_cfg,
+        source_notify_policy_map=source_notify_policy_map,
+        now=datetime.now(tz),
+    )
 
     start_time = parse_clock(cfg["schedule"]["active_hours"]["start"])
     end_time = parse_clock(cfg["schedule"]["active_hours"]["end"])
@@ -439,6 +569,8 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
             email_cfg=email_cfg,
             notifications_cfg=notifications_cfg,
             source_display_map=source_display_map,
+            source_subject_prefix_map=source_subject_prefix_map,
+            source_notify_policy_map=source_notify_policy_map,
             tz=tz,
             now=now,
         )
@@ -539,6 +671,7 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
             source_notify_recent_hours = int(source.get("notify_recent_hours", notify_recent_hours) or 0)
             source_notify_require_posted_at = bool(source.get("notify_require_posted_at", notify_require_posted_at))
             for job in jobs:
+                original_posted_at = job.posted_at
                 normalize_job_posted_at(job, now=now)
                 if not matches_filters(
                     job.title,
@@ -556,19 +689,27 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
                     continue
 
                 insert_job(conn, job, first_seen=now)
-                if should_notify_seed(
+                should_send_notification = should_notify_seed(
                     seeded=seeded,
                     job=job,
                     now=now,
                     seed_recent_hours=source_seed_recent_hours,
                     seed_require_posted_at=source_seed_require_posted_at,
+                ) and should_notify_original_posted_recent(
+                    original_posted_at=original_posted_at,
+                    now=now,
+                    notify_recent_hours=source_notify_recent_hours,
+                    notify_require_posted_at=source_notify_require_posted_at,
                 ) and should_notify_recent(
                     job=job,
                     now=now,
                     notify_recent_hours=source_notify_recent_hours,
                     notify_require_posted_at=source_notify_require_posted_at,
-                ):
+                )
+                if should_send_notification:
                     new_jobs.append(job)
+                else:
+                    mark_notified(conn, [job.job_id], notified_at=now)
 
             if new_jobs:
                 send_job_notifications(
@@ -577,6 +718,7 @@ def run_scheduler(cfg: dict, *, db_path: str) -> None:
                     notifications_cfg=notifications_cfg,
                     jobs_by_source=group_jobs_by_source(new_jobs),
                     source_display_map=source_display_map,
+                    source_subject_prefix_map=source_subject_prefix_map,
                     tz=tz,
                     now=now,
                     context="new-job",

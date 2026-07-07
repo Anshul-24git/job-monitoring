@@ -9,6 +9,8 @@ from ..utils import ensure_absolute_url, hash_job_id, normalize_text, parse_date
 
 
 TARGET_ROLE_PATTERNS = (
+    re.compile(r"\bai engineer\b", re.I),
+    re.compile(r"\bai software engineer\b", re.I),
     re.compile(r"\bsoftware development engineer\b", re.I),
     re.compile(r"\bsoftware dev(?:elopment)? engineer\b", re.I),
     re.compile(r"\bsoftware engineer\b", re.I),

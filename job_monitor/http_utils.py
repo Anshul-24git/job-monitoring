@@ -12,7 +12,9 @@ DEFAULT_HEADERS = {
     ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
-    "Accept-Encoding": "gzip, deflate, br",
+    # Avoid advertising Brotli unless the runtime has a decoder installed.
+    # Some job boards return raw br-compressed bytes to requests otherwise.
+    "Accept-Encoding": "gzip, deflate",
     "Connection": "keep-alive",
     "DNT": "1",
     "Upgrade-Insecure-Requests": "1",

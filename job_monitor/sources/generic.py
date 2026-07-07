@@ -1,5 +1,6 @@
 import json
 import re
+from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable, List
 from urllib.parse import urlparse
 
@@ -56,6 +57,7 @@ POSTED_LABELED_RE = re.compile(r"\b(?:posted|date posted|posted on|updated):\s*(
 DATE_TEXT_RE = re.compile(
     r"\b(?:\d{4}-\d{2}-\d{2}|\d{1,2}/\d{1,2}/\d{4}|[A-Za-z]{3,9}\s+\d{1,2},\s+\d{4})\b"
 )
+RELATIVE_AGE_RE = re.compile(r"\b(?P<num>\d+)\s*(?P<unit>d|day|days|h|hour|hours|m|min|mins|minute|minutes)\b", re.I)
 LOCATION_LINE_RE = re.compile(
     r"\b(remote|united states|usa|u\.s\.|[A-Z][A-Za-z .'-]+,\s*[A-Z]{2}\b|"
     r"[A-Z][A-Za-z .'-]+,\s*[A-Za-z][A-Za-z .'-]+|"
@@ -250,6 +252,16 @@ def _infer_location_from_job_url(url: str) -> str:
     return slug.title()
 
 
+def _infer_title_from_url(url: str) -> str:
+    parsed = urlparse(url)
+    parts = [part for part in parsed.path.split("/") if part]
+    if not parts:
+        return ""
+    slug = parts[-1]
+    slug = re.sub(r"-[a-z0-9]{8,}$", "", slug, flags=re.I)
+    return normalize_text(slug.replace("-", " ")).title()
+
+
 def _extract_title_and_location(title: str, url: str) -> tuple[str, str]:
     normalized = normalize_text(title)
     if not normalized:
@@ -303,6 +315,29 @@ def _extract_context_posted(lines: List[str]) -> tuple[str, bool]:
             value = normalize_text(match.group(0))
             return value, True
     return "", False
+
+
+def _parse_posted_at_text(value: str):
+    if normalize_text(value).lower() == "new":
+        return datetime.now(timezone.utc)
+
+    parsed = parse_date(value)
+    if parsed:
+        return parsed
+
+    match = RELATIVE_AGE_RE.search(normalize_text(value))
+    if not match:
+        return None
+
+    amount = int(match.group("num"))
+    unit = match.group("unit").lower()
+    if unit.startswith("d"):
+        delta = timedelta(days=amount)
+    elif unit.startswith("h"):
+        delta = timedelta(hours=amount)
+    else:
+        delta = timedelta(minutes=amount)
+    return datetime.now(timezone.utc) - delta
 
 
 def _find_candidate_card(link) -> Any:
@@ -372,6 +407,111 @@ def _enrich_jobs_from_jsonld(jobs: List[Job], jsonld_jobs: dict[str, dict]) -> N
         job.raw = raw
 
 
+def _is_jobposting_type(value: Any) -> bool:
+    if isinstance(value, list):
+        return any(_is_jobposting_type(item) for item in value)
+    return normalize_text(value).lower() == "jobposting"
+
+
+def _is_date_only_text(value: Any) -> bool:
+    text = normalize_text(value)
+    if not text:
+        return False
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}T00:00:00(?:\.0+)?Z?", text, re.I):
+        return True
+    return bool(DATE_TEXT_RE.search(text) and ":" not in text and "T" not in text and "t" not in text)
+
+
+def _extract_detail_jobposting(html: str, base_url: str) -> dict:
+    soup = BeautifulSoup(html, "lxml")
+    result: dict[str, Any] = {}
+
+    for tag in soup.find_all("script", attrs={"type": "application/ld+json"}):
+        if not tag.string:
+            continue
+        for obj in extract_jsonld_objects(tag.string):
+            if not isinstance(obj, dict) or not _is_jobposting_type(obj.get("@type")):
+                continue
+            title = normalize_text(obj.get("title"))
+            location = extract_location_from_jsonld(obj)
+            posted_value = obj.get("datePosted")
+            posted_at = parse_date(posted_value)
+            if title:
+                result["title"] = title
+            if location:
+                result["location"] = location
+            if posted_value:
+                result["posted_value"] = posted_value
+            if posted_at:
+                result["posted_at"] = posted_at
+            if result:
+                return result
+
+    date_el = soup.select_one('[itemprop="datePosted"]')
+    if date_el:
+        posted_value = normalize_text(date_el.get_text(" ", strip=True))
+        posted_at = parse_date(posted_value)
+        if posted_value:
+            result["posted_value"] = posted_value
+        if posted_at:
+            result["posted_at"] = posted_at
+
+    location_el = soup.select_one('[itemprop="jobLocation"]')
+    if location_el:
+        location = normalize_text(location_el.get_text(" ", strip=True))
+        location = re.sub(r"^Location\s+", "", location, flags=re.I)
+        if location:
+            result["location"] = location
+
+    return result
+
+
+def _enrich_jobs_from_detail_pages(source: dict, session, jobs: List[Job], *, timeout: int) -> None:
+    if not source.get("detail_jsonld_enrich"):
+        return
+
+    max_jobs = int(source.get("detail_jsonld_max_jobs", len(jobs)) or 0)
+    detail_timeout = int(source.get("detail_timeout_seconds", timeout) or timeout)
+    retries = int(source.get("detail_retries", 1) or 0)
+    update_title = bool(source.get("detail_update_title", False))
+    preserve_date_only = bool(source.get("preserve_date_only_posted_at", False))
+
+    for job in jobs[:max(max_jobs, 0)]:
+        try:
+            resp = request_with_retries(
+                session,
+                "GET",
+                job.url,
+                timeout=detail_timeout,
+                retries=retries,
+                backoff_seconds=0.5,
+            )
+            detail = _extract_detail_jobposting(resp.text, job.url)
+        except Exception:
+            continue
+
+        if update_title and detail.get("title"):
+            job.title = normalize_text(detail["title"])
+        if detail.get("location"):
+            job.location = normalize_text(detail["location"])
+        if detail.get("posted_at"):
+            job.posted_at = detail["posted_at"]
+
+        raw = job.raw if isinstance(job.raw, dict) else {}
+        if detail.get("posted_value"):
+            raw["posted_at_text"] = detail["posted_value"]
+            raw["posted_at_is_date_only"] = _is_date_only_text(detail["posted_value"])
+        if preserve_date_only:
+            raw["preserve_date_only_posted_at"] = True
+        job.raw = raw
+
+
+def _finalize_jobs(source: dict, session, jobs: List[Job], jsonld_jobs: dict[str, dict], *, timeout: int) -> List[Job]:
+    _enrich_jobs_from_jsonld(jobs, jsonld_jobs)
+    _enrich_jobs_from_detail_pages(source, session, jobs, timeout=timeout)
+    return jobs
+
+
 def _extract_jobs_from_links(source: dict, soup: BeautifulSoup, base_url: str) -> List[Job]:
     ignored_titles = {
         "apply",
@@ -382,6 +522,19 @@ def _extract_jobs_from_links(source: dict, soup: BeautifulSoup, base_url: str) -
         "all jobs",
         "search jobs",
     }
+    ignored_titles |= {normalize_text(value).lower() for value in source.get("ignored_link_titles", [])}
+    infer_title_values = {
+        normalize_text(value).lower()
+        for value in source.get("infer_title_from_url_when_titles", [])
+        if normalize_text(value)
+    }
+    job_link_patterns = source.get("job_link_patterns") or JOB_LINK_PATTERNS
+    job_link_patterns = [normalize_text(pattern).lower() for pattern in job_link_patterns if normalize_text(pattern)]
+    job_link_exclude_patterns = [
+        normalize_text(pattern).lower()
+        for pattern in source.get("job_link_exclude_patterns", [])
+        if normalize_text(pattern)
+    ]
     jobs: List[Job] = []
     seen_ids = set()
 
@@ -390,7 +543,9 @@ def _extract_jobs_from_links(source: dict, soup: BeautifulSoup, base_url: str) -
         if not href:
             continue
         href_l = href.lower()
-        if not any(pattern in href_l for pattern in JOB_LINK_PATTERNS):
+        if not any(pattern in href_l for pattern in job_link_patterns):
+            continue
+        if job_link_exclude_patterns and any(pattern in href_l for pattern in job_link_exclude_patterns):
             continue
 
         title = normalize_text(link.get_text(" ", strip=True))
@@ -404,12 +559,24 @@ def _extract_jobs_from_links(source: dict, soup: BeautifulSoup, base_url: str) -
             continue
 
         url = ensure_absolute_url(base_url, href)
+        if title.lower() in infer_title_values:
+            inferred_title = _infer_title_from_url(url)
+            if inferred_title:
+                title = inferred_title
         title, location = _extract_title_and_location(title, url)
         if not title:
             continue
         context_location, posted_text, posted_at_is_date_only = _extract_context_from_link(link, title)
         if not location and context_location:
             location = context_location
+        if not posted_text and source.get("infer_relative_age_from_title"):
+            age_match = RELATIVE_AGE_RE.search(title)
+            if age_match:
+                posted_text = age_match.group(0)
+                posted_at_is_date_only = False
+            elif re.search(r"\bnew\b", title, re.I):
+                posted_text = "new"
+                posted_at_is_date_only = False
         if not _is_probable_job_record(source, title, url):
             continue
         job_id = hash_job_id(source["name"], url)
@@ -423,11 +590,12 @@ def _extract_jobs_from_links(source: dict, soup: BeautifulSoup, base_url: str) -
                 title=title,
                 location=location,
                 url=url,
-                posted_at=parse_date(posted_text) if posted_text else None,
+                posted_at=_parse_posted_at_text(posted_text) if posted_text else None,
                 raw={
                     "source": "anchor_fallback",
                     "posted_at_text": posted_text,
                     "posted_at_is_date_only": posted_at_is_date_only,
+                    "posted_at_display_label": "seen" if normalize_text(posted_text).lower() == "new" else "",
                 },
             )
         )
@@ -549,8 +717,19 @@ def fetch_generic_jobs(source: dict, session) -> List[Job]:
 
             title = normalize_text(title_el.get_text()) if title_el else ""
             location = normalize_text(location_el.get_text()) if location_el else ""
+            location_parts = selectors.get("location_parts") or []
+            if not location and location_parts:
+                if isinstance(location_parts, str):
+                    location_parts = [location_parts]
+                parts = []
+                for selector in location_parts:
+                    for part_el in card.select(selector):
+                        part = normalize_text(part_el.get_text())
+                        if part:
+                            parts.append(part)
+                location = normalize_text(", ".join(parts))
             posted_text = normalize_text(date_el.get_text()) if date_el else ""
-            posted_at = parse_date(posted_text) if posted_text else None
+            posted_at = _parse_posted_at_text(posted_text) if posted_text else None
             link = link_el.get("href") if link_el else None
 
             if not title or not link:
@@ -561,7 +740,7 @@ def fetch_generic_jobs(source: dict, session) -> List[Job]:
                 location = context_location
             if not posted_text and context_posted_text:
                 posted_text = context_posted_text
-                posted_at = parse_date(posted_text) if posted_text else None
+                posted_at = _parse_posted_at_text(posted_text) if posted_text else None
 
             link = ensure_absolute_url(base_url, link)
             title, inferred_location = _extract_title_and_location(title, link)
@@ -586,13 +765,13 @@ def fetch_generic_jobs(source: dict, session) -> List[Job]:
                                 or (DATE_TEXT_RE.search(posted_text) and ":" not in posted_text and "T" not in posted_text and "t" not in posted_text)
                             )
                         ),
+                        "preserve_date_only_posted_at": bool(source.get("preserve_date_only_posted_at", False)),
                     },
                 )
             )
 
     if jobs:
-        _enrich_jobs_from_jsonld(jobs, jsonld_jobs)
-        return jobs
+        return _finalize_jobs(source, session, jobs, jsonld_jobs, timeout=timeout)
 
     next_data = soup.find("script", id="__NEXT_DATA__")
     if next_data and next_data.string:
@@ -603,8 +782,7 @@ def fetch_generic_jobs(source: dict, session) -> List[Job]:
             pass
 
     if jobs:
-        _enrich_jobs_from_jsonld(jobs, jsonld_jobs)
-        return jobs
+        return _finalize_jobs(source, session, jobs, jsonld_jobs, timeout=timeout)
 
     for tag in soup.find_all("script", attrs={"type": "application/json"}):
         if not tag.string:
@@ -615,8 +793,7 @@ def fetch_generic_jobs(source: dict, session) -> List[Job]:
         _append_jobs_from_payload(source, base_url, payload, jobs, seen_ids)
 
     if jobs:
-        _enrich_jobs_from_jsonld(jobs, jsonld_jobs)
-        return jobs
+        return _finalize_jobs(source, session, jobs, jsonld_jobs, timeout=timeout)
 
     for tag in soup.find_all("script"):
         script_text = tag.string or ""
@@ -633,8 +810,7 @@ def fetch_generic_jobs(source: dict, session) -> List[Job]:
             break
 
     if jobs:
-        _enrich_jobs_from_jsonld(jobs, jsonld_jobs)
-        return jobs
+        return _finalize_jobs(source, session, jobs, jsonld_jobs, timeout=timeout)
 
     for tag in soup.find_all("code"):
         raw_text = tag.string or tag.get_text()
@@ -646,8 +822,7 @@ def fetch_generic_jobs(source: dict, session) -> List[Job]:
         _append_jobs_from_payload(source, base_url, payload, jobs, seen_ids)
 
     if jobs:
-        _enrich_jobs_from_jsonld(jobs, jsonld_jobs)
-        return jobs
+        return _finalize_jobs(source, session, jobs, jsonld_jobs, timeout=timeout)
 
     for tag in soup.find_all("script", attrs={"type": "application/ld+json"}):
         if not tag.string:
@@ -683,9 +858,7 @@ def fetch_generic_jobs(source: dict, session) -> List[Job]:
             jobs.extend(itemlist_jobs)
 
     if jobs:
-        _enrich_jobs_from_jsonld(jobs, jsonld_jobs)
-        return jobs
+        return _finalize_jobs(source, session, jobs, jsonld_jobs, timeout=timeout)
 
     jobs = _extract_jobs_from_links(source, soup, base_url)
-    _enrich_jobs_from_jsonld(jobs, jsonld_jobs)
-    return jobs
+    return _finalize_jobs(source, session, jobs, jsonld_jobs, timeout=timeout)

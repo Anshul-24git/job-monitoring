@@ -6,6 +6,7 @@ from email.message import EmailMessage
 from typing import Dict, List
 
 from .models import Job
+from .utils import normalize_text
 
 
 @dataclass
@@ -16,15 +17,31 @@ class OutboundEmail:
 
 
 def format_job_line(job: Job, *, tz=None) -> str:
+    raw = job.raw if isinstance(job.raw, dict) else {}
+    label = normalize_text(raw.get("posted_at_display_label") or "posted").lower() or "posted"
     if job.posted_at:
         posted_at = job.posted_at
-        if tz:
-            posted_at = posted_at.astimezone(tz)
-        posted = posted_at.strftime("%Y-%m-%d | %H:%M %Z")
+        if raw.get("posted_at_display_date_only"):
+            posted = posted_at.strftime("%Y-%m-%d")
+        else:
+            if tz:
+                posted_at = posted_at.astimezone(tz)
+            posted = posted_at.strftime("%Y-%m-%d | %H:%M %Z")
     else:
         posted = "unknown"
-    location = job.location or "unknown"
-    return f"- {job.title} | {location} | posted: {posted}\n  {job.url}"
+
+    if normalize_text(job.source).lower() == "hnhiring":
+        return f"- {job.title}\n  {job.url}\n  {label}: {posted}"
+
+    location = normalize_text(job.location)
+    title = normalize_text(job.title)
+    parts = [title]
+    if location and location.lower() != title.lower():
+        parts.append(location)
+    elif not location:
+        parts.append("unknown")
+    parts.append(f"{label}: {posted}")
+    return f"- {' | '.join(parts)}\n  {job.url}"
 
 
 def build_jobs_email(jobs: List[Job], header: str, *, tz=None) -> str:

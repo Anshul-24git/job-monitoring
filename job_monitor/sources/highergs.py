@@ -47,7 +47,9 @@ def _is_target_highergs_role(title: str) -> bool:
         return False
 
     return (
-        "software engineer" in title_normalized
+        "ai engineer" in title_normalized
+        or "ai software engineer" in title_normalized
+        or "software engineer" in title_normalized
         or "forward deployed engineer" in title_normalized
     )
 

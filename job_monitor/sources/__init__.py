@@ -12,12 +12,14 @@ from .expedia import fetch_expedia_jobs
 from .generic import fetch_generic_jobs
 from .google import fetch_google_jobs
 from .greenhouse import fetch_greenhouse_jobs
+from .hnhiring import fetch_hnhiring_jobs
 from .highergs import fetch_highergs_jobs
 from .lever import fetch_lever_jobs
 from .microsoft import fetch_microsoft_jobs
 from .oraclecloud import fetch_oraclecloud_jobs
 from .playwright_links import fetch_playwright_links_jobs
 from .salesforce import fetch_salesforce_jobs
+from .simplyhired import fetch_simplyhired_jobs
 from .smartrecruiters import fetch_smartrecruiters_jobs
 from .uber import fetch_uber_jobs
 from .workday import fetch_workday_jobs
@@ -60,7 +62,7 @@ def detect_kind_from_url(url: str) -> str:
         return "highergs"
     if "google.com/about/careers" in parsed.geturl():
         return "google"
-    if "uber.com" in host and "/careers/list" in path:
+    if "uber.com" in host and ("/careers/list" in path or "/jobs" in path):
         return "uber"
     if "careers.adobe.com" in host:
         return "adobe"
@@ -68,6 +70,10 @@ def detect_kind_from_url(url: str) -> str:
         return "expedia"
     if "careers.salesforce.com" in host and "/jobs" in path:
         return "salesforce"
+    if "simplyhired.com" in host and path.startswith("/search"):
+        return "simplyhired"
+    if "hnhiring.com" in host:
+        return "hnhiring"
     if "metacareers.com" in host and "/jobsearch" in path:
         return "playwright_links"
 
@@ -115,6 +121,10 @@ def fetch_jobs_for_source(source: dict, session) -> list:
         return fetch_expedia_jobs(source, session)
     if kind == "salesforce":
         return fetch_salesforce_jobs(source, session)
+    if kind == "simplyhired":
+        return fetch_simplyhired_jobs(source, session)
+    if kind == "hnhiring":
+        return fetch_hnhiring_jobs(source, session)
     if kind == "playwright_links":
         return fetch_playwright_links_jobs(source, session)
     if kind == "bamboohr":
